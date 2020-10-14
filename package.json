@@ -1,0 +1,23 @@
+{
+  "name": "se3316-lab3-aduffy22",
+  "version": "1.0.0",
+  "description": "Web Technologies SE3316 Lab 3 repository",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-duffy12/se3316-lab3-aduffy22.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/a-duffy12/se3316-lab3-aduffy22/issues"
+  },
+  "homepage": "https://github.com/a-duffy12/se3316-lab3-aduffy22#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
