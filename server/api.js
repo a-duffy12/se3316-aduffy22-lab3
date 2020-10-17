@@ -1,17 +1,21 @@
 const Joi = require("joi"); // get joi (for input validation)
 const express = require("express"); // get express 
-const router = express.Router(); // get router from express
-const courseData = require("./Lab3-timetable-data.json"); // json data
+const jdata = require("./Lab3-timetable-data.json"); // json data
 
-router.get("/api/courses", (req, res) => { // get subject and classnames
-    
-    let courses = ""; // empty courses variable
+//const router = express.Router(); // set router object from express
+const app = express();
 
-    for (c in courseData)
+// GET
+app.get("/api/courses", (req, res) => { // get all subjects and classnames
+
+    let courses = ""; // empty string variable to return
+
+    for (c in jdata)
     {
-        courses += courseData.className + ": " + courseData.subject +"\n";
+        courses += `${jdata.subject}: ${jdata.className}, `;
     }
-    
+
+    console.log(courses);
     res.send(courses);
 
 });
