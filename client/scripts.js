@@ -3,11 +3,13 @@
 // get DOM objects for each function
 let output = document.getElementById("output"); // field to print output to
 let buttonQ1 = document.getElementById("buttonQ1"); // button to call function q1
-let buttonQ2 = document.getElementById("buttonQ2");
+let buttonQ2 = document.getElementById("buttonQ2"); // button to call function q2
+let buttonQ3 = document.getElementById("buttonQ3"); // button to call functon q3
 
 // event handlers for each function
 buttonQ1.addEventListener("click", displayCourses);
 buttonQ2.addEventListener("click", displayCourseCodes);
+buttonQ3.addEventListener("click", displayTimeTable);
 
 // function to print all subjects + classnames q1
 function displayCourses()
@@ -15,17 +17,19 @@ function displayCourses()
     clear();
 
     let data = document.createTextNode("");
+    
     let req = new Request("/api/courses", {
-
         method: "GET",
         headers: new Headers ({
             "Content-Type": "text/plain"
         })
     });
 
-    fetch(req).then(res => data.textContent = res)
-                            .then(output.appendChild(data))
-                            .catch(error => console.error("Error: " + error));
+    fetch(req)
+        .then(res => res.text())
+        .then(cons => data.textContent = cons)
+        .then(output.appendChild(data))
+        .catch(error => console.error("Error: " + error));
 }
 
 // function to print all catalogs for a given subject q2
@@ -38,17 +42,19 @@ function displayCourseCodes()
         clear();
 
         let data = document.createTextNode("");
+        
         let req = new Request("/api/courses/" + subject, {
-
             method: "GET",
             headers: new Headers ({
                 "Content-Type": "text/plain"
             })
         });
 
-        fetch(req).then(res => data.textContent = res)
-                                .then(output.appendChild(data))
-                                .catch(error => console.error("Error:" + error));
+        fetch(req)
+            .then(res => res.text())
+            .then(cons => data.textContent = cons)
+            .then(output.appendChild(data))
+            .catch(error => console.error("Error:" + error));
     }
     else 
     {
@@ -57,6 +63,43 @@ function displayCourseCodes()
 }
 
 // function to get a timetable entry(ies) when given a subject/catalog/(component) q3
+function displayTimeTable()
+{
+    let subject = prompt("Please enter a subject code: ", "");
+    let catalog = prompt("Please enter a catalog number: ", "");
+
+    if (sanitize(subject) && sanitize(catalog))
+    {
+        clear();
+
+        let data = document.createTextNode("");
+        let req = new Request("/api/courses/" + subject + "/" + catalog, {
+
+            method: "GET",
+            headers: new Headers ({
+                "Content-Type": "text/plain"
+            })
+        });
+
+        fetch(req)
+            .then(res => res.text())
+            .then(cons => data.textContent = cons)
+            .then(output.appendChild(data))
+            .catch(error => console.error("Error: " + error));
+    } 
+    else if (sanitize(subject))
+    {
+        alert("Invalid input for field(s): catalog number!")
+    }
+    else if (sanitize(catalog))
+    {
+        alert("Invalid input for field(s): subject code!")
+    }
+    else
+    {
+        alert("Invalid input for field(s): subject code, catalog number")
+    }
+}
 
 // function to create a new schedule with subject+catalog pairs and a given name q4
 

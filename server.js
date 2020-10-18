@@ -47,7 +47,7 @@ app.get("/api/courses/:subject", (req, res) => { // get catalog numbers for a gi
         
 });
 
-app.get("/api/courses/:subject/:catalog", (req, res) => {
+app.get("/api/courses/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog
 
     let timetables = "";
     let sub = false;
@@ -60,9 +60,9 @@ app.get("/api/courses/:subject/:catalog", (req, res) => {
 
             if (cdata[c].catalog_nbr == req.params.catalog)
             {
-                for (d in cdata[c].course_info.days) // build timetable by day //TODO
+                for (d in cdata[c].course_info[0].days) // build timetable by day //TODO
                 {
-                    timetables += `${cdata[c].course_info.days[d]}: ${cdata[c].course_info.start_time} - ${cdata[c].course_info.end_time}`;
+                    timetables += `${cdata[c].course_info[0].days[d]}: ${cdata[c].course_info[0].start_time} - ${cdata[c].course_info[0].end_time}, `;
                 }
             }
         }
