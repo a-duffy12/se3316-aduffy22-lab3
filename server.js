@@ -36,15 +36,50 @@ app.get("/api/courses/:subject", (req, res) => { // get catalog numbers for a gi
         }
     }
 
-    if (catalog == "") // if no results are found (catalog never modified)
+    if (catalog == "") // if no instances of the given subject are found
     {
-        res.status(404).send(`No course found with subject name: ${req.params.subject}`)
+        res.status(404).send(`No course found with subject name: ${req.params.subject}`);
     }
     else // if there was a corresponding subject
     {
         res.send(catalog);
     }
         
+});
+
+app.get("/api/courses/:subject/:catalog", (req, res) => {
+
+    let timetables = "";
+    let sub = false;
+
+    for (c in cdata)
+    {
+        if (cdata[c].subject == req.params.subject)
+        {
+            sub = true; // found at least one instance of the subject
+
+            if (cdata[c].catalog_nbr == req.params.catalog)
+            {
+                for (d in cdata[c].course_info.days) // build timetable by day //TODO
+                {
+                    timetables += `${cdata[c].course_info.days[d]}: ${cdata[c].course_info.start_time} - ${cdata[c].course_info.end_time}`;
+                }
+            }
+        }
+    }
+
+    if (!sub) // if no instances of the given subject are found
+    {
+        res.status(404).send(`No course found with subject name: ${req.params.subject}`);
+    }
+    else if ((sub) && (timetables == "")) // if instances of the given subject are found, but the course code is not found
+    {
+        res.status(404).send(`No course found with catalog number: ${req.params.catalog}`);
+    } 
+    else // all was found properly
+    {
+        res.send(timetables); // return the time table
+    }
 });
 
 // get PORT environment variable, or use 3000 if not available
