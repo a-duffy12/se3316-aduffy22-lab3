@@ -91,6 +91,7 @@ app.get("/api/courses/:subject/:catalog/:component", (req, res) => { // get the 
 
     let timetables = "";
     let sub = false;
+    let cat = false;
 
     for (c in cdata)
     {
@@ -120,9 +121,13 @@ app.get("/api/courses/:subject/:catalog/:component", (req, res) => { // get the 
     {
         res.status(404).send(`No course found with subject name: ${req.params.subject}`);
     }
-    else if ((sub) && (timetables == "")) // if instances of the given subject are found, but the course code is not found
+    else if ((sub) && (!cat)) // if instances of the given subject are found, but the course code is not found
     {
         res.status(404).send(`No course found with catalog number: ${req.params.catalog}`);
+    }
+    else if ((sub) && (cat) && (timetables == "")) // if the subject and code are found, but the component is not available
+    {
+        res.status(404).send(`No course found with specified component: ${req.params.component}`);
     } 
     else // all was found properly
     {

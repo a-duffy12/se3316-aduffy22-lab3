@@ -2,10 +2,16 @@
 
 // get DOM objects for each function
 let output = document.getElementById("output"); // field to print output to
-let buttonQ1 = document.getElementById("buttonQ1"); // button to call function q1
-let buttonQ2 = document.getElementById("buttonQ2"); // button to call function q2
-let buttonQ3a = document.getElementById("buttonQ3a"); // button to call functon q3
-let buttonQ3b = document.getElementById("buttonQ3b"); // button to call functon q3
+let buttonQ1 = document.getElementById("buttonQ1");
+let buttonQ2 = document.getElementById("buttonQ2");
+let buttonQ3a = document.getElementById("buttonQ3a");
+let buttonQ3b = document.getElementById("buttonQ3b");
+let buttonQ4 = document.getElementById("buttonQ4");
+let buttonQ5 = document.getElementById("buttonQ5");
+let buttonQ6 = document.getElementById("buttonQ6");
+let buttonQ7 = document.getElementById("buttonQ7");
+let buttonQ8 = document.getElementById("buttonQ8");
+let buttonQ9 = document.getElementById("buttonQ9");
 
 // event handlers for each function
 buttonQ1.addEventListener("click", displayCourses);
@@ -158,6 +164,11 @@ function displayTimeTableMini()
 
 // function to sanitize input on the front end
 function sanitize(input)
+{
+    return true; //TODO
+}
+
+function sanitizeNum(input)
 {
     return true; //TODO
 }
