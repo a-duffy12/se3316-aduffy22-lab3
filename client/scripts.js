@@ -4,12 +4,14 @@
 let output = document.getElementById("output"); // field to print output to
 let buttonQ1 = document.getElementById("buttonQ1"); // button to call function q1
 let buttonQ2 = document.getElementById("buttonQ2"); // button to call function q2
-let buttonQ3 = document.getElementById("buttonQ3"); // button to call functon q3
+let buttonQ3a = document.getElementById("buttonQ3a"); // button to call functon q3
+let buttonQ3b = document.getElementById("buttonQ3b"); // button to call functon q3
 
 // event handlers for each function
 buttonQ1.addEventListener("click", displayCourses);
 buttonQ2.addEventListener("click", displayCourseCodes);
-buttonQ3.addEventListener("click", displayTimeTable);
+buttonQ3a.addEventListener("click", displayTimeTableFull);
+buttonQ3b.addEventListener("click", displayTimeTableMini);
 
 // function to print all subjects + classnames q1
 function displayCourses()
@@ -62,8 +64,8 @@ function displayCourseCodes()
     }   
 }
 
-// function to get a timetable entry(ies) when given a subject/catalog/(component) q3
-function displayTimeTable()
+// function to get a timetable entry(ies) when given a subject/catalog q3
+function displayTimeTableFull()
 {
     let subject = prompt("Please enter a subject code: ", "");
     let catalog = prompt("Please enter a catalog number: ", "");
@@ -74,6 +76,46 @@ function displayTimeTable()
 
         let data = document.createTextNode("");
         let req = new Request("/api/courses/" + subject + "/" + catalog, {
+
+            method: "GET",
+            headers: new Headers ({
+                "Content-Type": "text/plain"
+            })
+        });
+
+        fetch(req)
+            .then(res => res.text())
+            .then(cons => data.textContent = cons)
+            .then(output.appendChild(data))
+            .catch(error => console.error("Error: " + error));
+    } 
+    else if (sanitize(subject))
+    {
+        alert("Invalid input for field(s): catalog number!")
+    }
+    else if (sanitize(catalog))
+    {
+        alert("Invalid input for field(s): subject code!")
+    }
+    else
+    {
+        alert("Invalid input for field(s): subject code, catalog number")
+    }
+}
+
+// function to get a timetable entry(ies) when given a subject/catalog/component) q3
+function displayTimeTableMini()
+{
+    let subject = prompt("Please enter a subject code: ", "");
+    let catalog = prompt("Please enter a catalog number: ", "");
+    let component = prompt("Please enter a course component: ", "");
+
+    if (sanitize(subject) && sanitize(catalog))
+    {
+        clear();
+
+        let data = document.createTextNode("");
+        let req = new Request("/api/courses/" + subject + "/" + catalog + "/" + component, {
 
             method: "GET",
             headers: new Headers ({
