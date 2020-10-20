@@ -1,17 +1,22 @@
-const Joi = require("joi"); // get joi (for input validation)
 const express = require("express"); // get express 
-const jdata = require("./server/Lab3-timetable-data.json"); // json data
+const router = express.Router(); // create router obejct
+const j1data = require("./data/Lab3-timetable-data.json"); // json data for courses
+const j2data = require("./data/Lab3-schedule-data.json"); // json data for schedules
 
 const app = express(); // create app constant
-const cdata = JSON.parse(JSON.stringify(jdata)); // parse json object
+const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
+const sdata = JSON.parse(JSON.stringify(j2data)); // parse json object holding the schedules
 
-app.use(express.json()); // allows express to parse json objects (middleware)
+router.use(express.json()); // allows express to parse json objects (middleware)
 
-app.use(express.static("client")); // folder where client-side code is stored
+app.use("/", express.static("static")); // folder where client-side code is stored
 
-//app.use("/api", require("./server/api"));
+app.use((req, res, next) => { // middleware function to do console logs
+    console.log(`${req.method} request for ${req.url}`); // print to console
+    next(); // continue processeing
+});
 
-app.get("/api/courses", (req, res) => { // get all subjects and classnames
+router.get("/", (req, res) => { // get all subjects and classnames
 
     let courses = ""; // empty string variable to return
 
@@ -24,7 +29,7 @@ app.get("/api/courses", (req, res) => { // get all subjects and classnames
 
 });
 
-app.get("/api/courses/:subject", (req, res) => { // get catalog numbers for a given subject
+router.get("/:subject", (req, res) => { // get catalog numbers for a given subject
 
     let catalog = ""; // empty string variable to return
 
@@ -47,7 +52,7 @@ app.get("/api/courses/:subject", (req, res) => { // get catalog numbers for a gi
         
 });
 
-app.get("/api/courses/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog
+router.get("/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog
 
     let timetables = "";
     let sub = false;
@@ -87,7 +92,7 @@ app.get("/api/courses/:subject/:catalog", (req, res) => { // get the timetable e
     }
 });
 
-app.get("/api/courses/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog
+router.get("/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog
 
     let timetables = "";
     let sub = false;
@@ -101,11 +106,13 @@ app.get("/api/courses/:subject/:catalog/:component", (req, res) => { // get the 
 
             if (cdata[c].catalog_nbr == req.params.catalog)
             {
+                cat = true;
+
                 for (p in cdata[c].course_info) // iterate through all class sections
                 {
                     if (cdata[c].course_info[p].ssr_component == req.params.component) // check for the given component
                     {
-                        timetables += `Class number: ${cdata[c].course_info[p].class_nbr} Component type: ${cdata[c].course_info[p].ssr_component}`;
+                        timetables += `Class number: ${cdata[c].course_info[p].class_nbr}`;
 
                         for (d in cdata[c].course_info[p].days) // build timetable by day
                         {
@@ -135,11 +142,44 @@ app.get("/api/courses/:subject/:catalog/:component", (req, res) => { // get the 
     }
 });
 
-//app.post("/api/schedules" (req, res) => { // create a ne schedule contaning a list of subject+catalog pairs
+router.put("/:schedule", (req, res) => {
 
+    const newSchedule = req.body; // get info for the new schedule
+    newSchedule.name = req.params.schedule; // set name for new schedule
+
+    const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index existing schedule of same name
     
-//});
+    if (exIndex >= 0) // if overwriting an existing schedule
+    {
+        sdata[exIndex] = newSchedule; // replace existing schedule with request body
+    }
+    else if (exIndex < 0) // if adding a new schedule
+    {
+        sdata.push(newSchedule);
+    }
+
+    res.send("ting");
+});
+
+router.post("/:schedule", (req, res) => {
+
+    const newSchedule = req.body; // get info for the updated schedule
+    newSchedule.name = req.params.schedule; // get name for the updated schedule
+
+    const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index of existing schedule of same name
+
+    if (exIndex >= 0) // if updating an existing schedule
+    {
+        sdata[exIndex] = newSchedule; // update
+    }
+    else if (exIndex < 0) // if schedule doesn't exist
+    {
+        res.status(404).send(`No schedule found with name: ${newSchedule.name}`);
+    }
+});
+
+app.use("/api/courses", router); // install router object path
 
 // get PORT environment variable, or use 3000 if not available
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listeneing on port ${port}...`)) // choose which port to listen on
+app.listen(port, () => {console.log(`Listeneing on port ${port}`)}); // choose which port to listen on
