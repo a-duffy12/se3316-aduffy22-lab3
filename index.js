@@ -6,7 +6,6 @@ const j2data = require("./data/Lab3-schedule-data.json"); // json data for sched
 
 const app = express(); // create app constant
 const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
-const sdata = JSON.parse(JSON.stringify(j2data)); // parse json object holding the schedules
 
 crouter.use(express.json()); // allows express to parse json objects (middleware)
 srouter.use(express.json()); // allows express to parse json objects (middleware)
@@ -18,13 +17,16 @@ app.use((req, res, next) => { // middleware function to do console logs
     next(); // continue processeing
 });
 
-crouter.get("/", (req, res) => { // get all subjects and classnames Q1
+crouter.get("/", (req, res) => { // get all subjects and course codes Q1
 
-    let courses = ""; // empty string variable to return
+    let courses = []; // empty array variable to return
 
     for (c in cdata)
     {
-        courses += `${cdata[c].subject}: ${cdata[c].className}, `;
+        let obj = {}; // create empty object
+        obj.subject = cdata[c].subject; // add subject
+        obj.catalog = cdata[c].catalog_nbr; // add course code
+        courses.push(obj); // add object to array
     }
 
     res.send(courses);
@@ -33,13 +35,15 @@ crouter.get("/", (req, res) => { // get all subjects and classnames Q1
 
 crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subject Q2
 
-    let catalog = ""; // empty string variable to return
+    let catalog = []; // empty string variable to return
 
     for (c in cdata)
     {
         if (cdata[c].subject == req.params.subject)
         {
-            catalog += `${cdata[c].catalog_nbr}, `;
+            let obj = {}; // create empty obj
+            obj.catalog = cdata[c].catalog_nbr; // add course code
+            catalog.push(obj); // add object to array
         }
     }
 
@@ -56,7 +60,7 @@ crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subj
 
 crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog Q3a
 
-    let timetables = "";
+    let timetables = [];
     let sub = false;
 
     for (c in cdata)
@@ -69,12 +73,21 @@ crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for
             {
                 for (p in cdata[c].course_info) // iterate through all class sections
                 {
-                    timetables += `Class number: ${cdata[c].course_info[p].class_nbr} Component type: ${cdata[c].course_info[p].ssr_component}`;
+                    let obj = {}; // create empty object
+                    obj.number = cdata[c].course_info[p].class_nbr; // add class number
+                    obj.component = cdata[c].course_info[p].ssr_component; // add component type
+                    obj.times = [];
 
                     for (d in cdata[c].course_info[p].days) // build timetable by day
                     {
-                        timetables += `, ${cdata[c].course_info[p].days[d]}: ${cdata[c].course_info[p].start_time} - ${cdata[c].course_info[p].end_time}`;
+                        let obj2 = {};
+                        obj2.day = cdata[c].course_info[p].days[d]; // add day
+                        obj2.start = cdata[c].course_info[p].start_time; // add start time
+                        obj2.end = cdata[c].course_info[p].end_time; // add end time
+                        obj.times.push(obj2); // add object to nested array
                     }
+
+                    timetables.push(obj); // add object to array
                 }
             }
         }
@@ -96,7 +109,7 @@ crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for
 
 crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog Q3b
 
-    let timetables = "";
+    let timetables = [];
     let sub = false;
     let cat = false;
 
@@ -114,12 +127,21 @@ crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetabl
                 {
                     if (cdata[c].course_info[p].ssr_component == req.params.component) // check for the given component
                     {
-                        timetables += `Class number: ${cdata[c].course_info[p].class_nbr}`;
+                        let obj = {}; // create empty object
+                        obj.number = cdata[c].course_info[p].class_nbr; // add class number
+                        obj.component = cdata[c].course_info[p].ssr_component; // add component type
+                        obj.times = [];
 
                         for (d in cdata[c].course_info[p].days) // build timetable by day
                         {
-                            timetables += `, ${cdata[c].course_info[p].days[d]}: ${cdata[c].course_info[p].start_time} - ${cdata[c].course_info[p].end_time}`;
+                            let obj2 = {};
+                            obj2.day = cdata[c].course_info[p].days[d]; // add day
+                            obj2.start = cdata[c].course_info[p].start_time; // add start time
+                            obj2.end = cdata[c].course_info[p].end_time; // add end time
+                            obj.times.push(obj2); // add object to nested array
                         }
+
+                        timetables.push(obj); // add object to array
                     } 
                 }
             }
@@ -146,6 +168,8 @@ crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetabl
 
 srouter.post("/:schedule", (req, res) => { // create a new schedule with a given name Q4
 
+    sdata = getScheduleData(j2data); // get up to date schedule data
+
     const newSchedule = req.body; // get info for the updated schedule
     newSchedule.name = req.params.schedule; // get name for the updated schedule
 
@@ -163,6 +187,8 @@ srouter.post("/:schedule", (req, res) => { // create a new schedule with a given
 });
 
 srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting ane existing one Q5
+
+    sdata = getScheduleData(j2data); // get up to date schedule data
 
     const newSchedule = req.body; // get info for the new schedule
     newSchedule.name = req.params.schedule; // set name for new schedule
@@ -182,6 +208,8 @@ srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting ane 
 
 srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pairs in given schedule Q6
 
+    sdata = getScheduleData(j2data); // get up to date schedule data
+
     const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
 
     if (exIndex >= 0) // if the schedule exists
@@ -190,26 +218,30 @@ srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pai
     }
     else if (exIndex < 0) // if the schedule doesn't exist
     {
-        res.status(404).send(`No schedule found with name: ${newSchedule.name}`);
+        res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
     }
 });
 
 srouter.delete("/:schedule", (req, res) => { // delete a schedule with given name Q7
    
+    sdata = getScheduleData(j2data); // get up to date schedule data
+
     const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
 
     if (exIndex >= 0) // if the schedule exists
     {
         sdata = sdata.filter(name => name != req.params.schedule); // retain all array elements except the one with the specified name
-        res.send(`Deleted schedule with name: ${newSchedule.name}`)
+        res.send(`Deleted schedule with name: ${req.params.schedule}`)
     }
     else if (exIndex < 0) // if the schedule doesn't exist
     {
-        res.status(404).send(`No schedule found with name: ${newSchedule.name}`);
+        res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
     }
 });
 
 srouter.get("/", (req, res) => { // get a list of schedule names and the number of courses in each Q8
+
+    sdata = getScheduleData(j2data); // get up to date schedule data
 
     if (sdata.length > 0) // if there are saved schedules
     {
@@ -217,10 +249,10 @@ srouter.get("/", (req, res) => { // get a list of schedule names and the number 
 
         for (s in sdata)
         {
-            const obj = {};
-            obj.name = sdata[s].name;
-            obj.course_count = sdata[s].classes.length;
-            schedules.push(obj);
+            const obj = {}; // create empty object
+            obj.name = sdata[s].name; // add schedule name
+            obj.course_count = sdata[s].classes.length; // add number of classes
+            schedules.push(obj); // add object to array
         }
 
         res.send(schedules); // send the new array to the front end
@@ -232,6 +264,8 @@ srouter.get("/", (req, res) => { // get a list of schedule names and the number 
 });
 
 srouter.delete("/", (req, res) => {
+
+    sdata = getScheduleData(j2data); // get up to date schedule data
 
     if (sdata.length > 0) // if there are saved schedules
     {
@@ -252,6 +286,12 @@ app.use("/api/schedules", srouter) // install router object path for schedules
 const port = process.env.PORT || 3000;
 app.listen(port, () => {console.log(`Listeneing on port ${port}`)}); // choose which port to listen on
 
+// function to read from JSON file before each usage of the sdata array
+function getScheduleData(file)
+{
+    return JSON.parse(JSON.stringify(file)); // parse json object holding the schedules;
+}
+
 // function to validate input
 function validateInput(input) 
 { 
@@ -259,7 +299,7 @@ function validateInput(input)
 };
 
 // function to write to JSON file after each update to sdata array
-function updateJSON(array, file)
+function setScheduleData(array, file)
 {
 
 };
