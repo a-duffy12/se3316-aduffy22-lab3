@@ -1,10 +1,12 @@
 const express = require("express"); // get express 
-const crouter = express.Router(); // create router obejct for courses
-const srouter = express.Router(); // create router object for schedules
+const fs = require("fs"); // get fs module
 const j1data = require("./data/Lab3-timetable-data.json"); // json data for courses
 const j2data = require("./data/Lab3-schedule-data.json"); // json data for schedules
+const sfile = "./data/Lab3-schedule-data.json"; // file holding json data for scehdules
 
 const app = express(); // create app constant
+const crouter = express.Router(); // create router obejct for courses
+const srouter = express.Router(); // create router object for schedules
 const cdata = JSON.parse(JSON.stringify(j1data)); // parse json object holding the courses
 
 crouter.use(express.json()); // allows express to parse json objects (middleware)
@@ -184,9 +186,11 @@ srouter.post("/:schedule", (req, res) => { // create a new schedule with a given
         sdata.push(newSchedule); // add new schedule to the array
         res.send(`Created schedule with name: ${newSchedule.name}`);
     }
+
+    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
 });
 
-srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting ane existing one Q5
+srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting an existing one Q5
 
     sdata = getScheduleData(j2data); // get up to date schedule data
 
@@ -204,6 +208,8 @@ srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting ane 
     {
         res.status(404).send(`No schedule found with name: ${newSchedule.name}`);
     }
+
+    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
 });
 
 srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pairs in given schedule Q6
@@ -230,13 +236,15 @@ srouter.delete("/:schedule", (req, res) => { // delete a schedule with given nam
 
     if (exIndex >= 0) // if the schedule exists
     {
-        sdata = sdata.filter(name => name != req.params.schedule); // retain all array elements except the one with the specified name
+        sdata = sdata.filter(s => s.name != req.params.schedule); // retain all array elements except the one with the specified name
         res.send(`Deleted schedule with name: ${req.params.schedule}`)
     }
     else if (exIndex < 0) // if the schedule doesn't exist
     {
         res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
     }
+
+    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
 });
 
 srouter.get("/", (req, res) => { // get a list of schedule names and the number of courses in each Q8
@@ -259,7 +267,7 @@ srouter.get("/", (req, res) => { // get a list of schedule names and the number 
     }
     else // if there are no saved schedules
     {
-        res.status(404).send(`No schedules exist`);
+        res.status(404).send("No schedules exist");
     }
 });
 
@@ -275,8 +283,10 @@ srouter.delete("/", (req, res) => {
     }
     else // if there are no saved schedules
     {
-        res.status(404).send(`No schedules exist`);
+        res.status(404).send("No schedules exist");
     }
+
+    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
 });
 
 app.use("/api/courses", crouter); // install router object path for courses
@@ -290,7 +300,23 @@ app.listen(port, () => {console.log(`Listeneing on port ${port}`)}); // choose w
 function getScheduleData(file)
 {
     return JSON.parse(JSON.stringify(file)); // parse json object holding the schedules;
-}
+};
+
+// function to write to JSON file after each update to sdata array
+function setScheduleData(array, file)
+{
+    let data = JSON.stringify(array); // turn given array into JSON 
+    
+    fs.writeFile(file, data, error => {
+
+        if (error) // if an error is thrown when writing
+        {
+            throw error;
+        }
+
+        console.log(`Successfully wrote to file with name: ${file}`);
+    })
+};
 
 // function to validate input
 function validateInput(input) 
@@ -298,8 +324,3 @@ function validateInput(input)
     return true; // TODO
 };
 
-// function to write to JSON file after each update to sdata array
-function setScheduleData(array, file)
-{
-
-};
