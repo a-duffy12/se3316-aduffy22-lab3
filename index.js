@@ -37,97 +37,51 @@ crouter.get("/", (req, res) => { // get all subjects and course codes Q1
 
 crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subject Q2
 
-    let catalog = []; // empty string variable to return
-
-    for (c in cdata)
+    if (validateInput(req.params.subject))
     {
-        if (cdata[c].subject == req.params.subject)
+        let catalog = []; // empty string variable to return
+
+        for (c in cdata)
         {
-            let obj = {}; // create empty obj
-            obj.catalog = cdata[c].catalog_nbr; // add course code
-            catalog.push(obj); // add object to array
+            if (cdata[c].subject == req.params.subject)
+            {
+                let obj = {}; // create empty obj
+                obj.catalog = cdata[c].catalog_nbr; // add course code
+                catalog.push(obj); // add object to array
+            }
+        }
+
+        if (catalog == "") // if no instances of the given subject are found
+        {
+            res.status(404).send(`No course found with subject name: ${req.params.subject}`);
+        }
+        else // if there was a corresponding subject
+        {
+            res.send(catalog);
         }
     }
-
-    if (catalog == "") // if no instances of the given subject are found
+    else  
     {
-        res.status(404).send(`No course found with subject name: ${req.params.subject}`);
+        res.status(400).send("Invalid input!");
     }
-    else // if there was a corresponding subject
-    {
-        res.send(catalog);
-    }
-        
 });
 
 crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog Q3a
 
-    let timetables = [];
-    let sub = false;
-
-    for (c in cdata)
+    if (validateInput(req.params.subject) && validateInput(req.params.catalog))
     {
-        if (cdata[c].subject == req.params.subject)
+        let timetables = [];
+        let sub = false;
+
+        for (c in cdata)
         {
-            sub = true; // found at least one instance of the subject
-
-            if (cdata[c].catalog_nbr == req.params.catalog)
+            if (cdata[c].subject == req.params.subject)
             {
-                for (p in cdata[c].course_info) // iterate through all class sections
+                sub = true; // found at least one instance of the subject
+
+                if (cdata[c].catalog_nbr == req.params.catalog)
                 {
-                    let obj = {}; // create empty object
-                    obj.number = cdata[c].course_info[p].class_nbr; // add class number
-                    obj.component = cdata[c].course_info[p].ssr_component; // add component type
-                    obj.times = [];
-
-                    for (d in cdata[c].course_info[p].days) // build timetable by day
-                    {
-                        let obj2 = {};
-                        obj2.day = cdata[c].course_info[p].days[d]; // add day
-                        obj2.start = cdata[c].course_info[p].start_time; // add start time
-                        obj2.end = cdata[c].course_info[p].end_time; // add end time
-                        obj.times.push(obj2); // add object to nested array
-                    }
-
-                    timetables.push(obj); // add object to array
-                }
-            }
-        }
-    }
-
-    if (!sub) // if no instances of the given subject are found
-    {
-        res.status(404).send(`No course found with subject name: ${req.params.subject}`);
-    }
-    else if ((sub) && (timetables == "")) // if instances of the given subject are found, but the course code is not found
-    {
-        res.status(404).send(`No course found with catalog number: ${req.params.catalog}`);
-    } 
-    else // all was found properly
-    {
-        res.send(timetables); // return the time table
-    }
-});
-
-crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog Q3b
-
-    let timetables = [];
-    let sub = false;
-    let cat = false;
-
-    for (c in cdata)
-    {
-        if (cdata[c].subject == req.params.subject)
-        {
-            sub = true; // found at least one instance of the subject
-
-            if (cdata[c].catalog_nbr == req.params.catalog)
-            {
-                cat = true;
-
-                for (p in cdata[c].course_info) // iterate through all class sections
-                {
-                    if (cdata[c].course_info[p].ssr_component == req.params.component) // check for the given component
+                    for (p in cdata[c].course_info) // iterate through all class sections
                     {
                         let obj = {}; // create empty object
                         obj.number = cdata[c].course_info[p].class_nbr; // add class number
@@ -144,28 +98,95 @@ crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetabl
                         }
 
                         timetables.push(obj); // add object to array
-                    } 
+                    }
                 }
             }
         }
-    }
 
-    if (!sub) // if no instances of the given subject are found
-    {
-        res.status(404).send(`No course found with subject name: ${req.params.subject}`);
+        if (!sub) // if no instances of the given subject are found
+        {
+            res.status(404).send(`No course found with subject name: ${req.params.subject}`);
+        }
+        else if ((sub) && (timetables == "")) // if instances of the given subject are found, but the course code is not found
+        {
+            res.status(404).send(`No course found with catalog number: ${req.params.catalog}`);
+        } 
+        else // all was found properly
+        {
+            res.send(timetables); // return the time table
+        }
     }
-    else if ((sub) && (!cat)) // if instances of the given subject are found, but the course code is not found
+    else 
     {
-        res.status(404).send(`No course found with catalog number: ${req.params.catalog}`);
+        res.status(400).send("Invalid input!");   
     }
-    else if ((sub) && (cat) && (timetables == "")) // if the subject and code are found, but the component is not available
+});  
+
+crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog Q3b
+
+    if (validateInput(req.params.subject) && validateInput(req.params.catalog) && validateInput(req.params.component))
     {
-        res.status(404).send(`No course found with specified component: ${req.params.component}`);
-    } 
-    else // all was found properly
-    {
-        res.send(timetables); // return the time table
+        let timetables = [];
+        let sub = false;
+        let cat = false;
+
+        for (c in cdata)
+        {
+            if (cdata[c].subject == req.params.subject)
+            {
+                sub = true; // found at least one instance of the subject
+
+                if (cdata[c].catalog_nbr == req.params.catalog)
+                {
+                    cat = true;
+
+                    for (p in cdata[c].course_info) // iterate through all class sections
+                    {
+                        if (cdata[c].course_info[p].ssr_component == req.params.component) // check for the given component
+                        {
+                            let obj = {}; // create empty object
+                            obj.number = cdata[c].course_info[p].class_nbr; // add class number
+                            obj.component = cdata[c].course_info[p].ssr_component; // add component type
+                            obj.times = [];
+
+                            for (d in cdata[c].course_info[p].days) // build timetable by day
+                            {
+                                let obj2 = {};
+                                obj2.day = cdata[c].course_info[p].days[d]; // add day
+                                obj2.start = cdata[c].course_info[p].start_time; // add start time
+                                obj2.end = cdata[c].course_info[p].end_time; // add end time
+                                obj.times.push(obj2); // add object to nested array
+                            }
+
+                            timetables.push(obj); // add object to array
+                        } 
+                    }
+                }
+            }
+        }
+
+        if (!sub) // if no instances of the given subject are found
+        {
+            res.status(404).send(`No course found with subject name: ${req.params.subject}`);
+        }
+        else if ((sub) && (!cat)) // if instances of the given subject are found, but the course code is not found
+        {
+            res.status(404).send(`No course found with catalog number: ${req.params.catalog}`);
+        }
+        else if ((sub) && (cat) && (timetables == "")) // if the subject and code are found, but the component is not available
+        {
+            res.status(404).send(`No course found with specified component: ${req.params.component}`);
+        } 
+        else // all was found properly
+        {
+            res.send(timetables); // return the time table
+        }
     }
+    else
+    {
+        res.status(400).send("Invalid input!"); 
+    }
+    
 });
 
 srouter.post("/:schedule", (req, res) => { // create a new schedule with a given name Q4
@@ -214,37 +235,51 @@ srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting an e
 
 srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pairs in given schedule Q6
 
-    sdata = getScheduleData(j2data); // get up to date schedule data
-
-    const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
-
-    if (exIndex >= 0) // if the schedule exists
+    if (validateInput(req.params.schedule))
     {
-        res.send(sdata[exIndex].classes); // send array of class pairs from specified schedule
+        sdata = getScheduleData(j2data); // get up to date schedule data
+
+        const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
+
+        if (exIndex >= 0) // if the schedule exists
+        {
+            res.send(sdata[exIndex].classes); // send array of class pairs from specified schedule
+        }
+        else if (exIndex < 0) // if the schedule doesn't exist
+        {
+            res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+        }
     }
-    else if (exIndex < 0) // if the schedule doesn't exist
+    else
     {
-        res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+        res.status(400).send("Invalid input!");    
     }
 });
 
 srouter.delete("/:schedule", (req, res) => { // delete a schedule with given name Q7
    
-    sdata = getScheduleData(j2data); // get up to date schedule data
-
-    const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
-
-    if (exIndex >= 0) // if the schedule exists
+    if (validateInput(req.params.schedule))
     {
-        sdata = sdata.filter(s => s.name != req.params.schedule); // retain all array elements except the one with the specified name
-        res.send(`Deleted schedule with name: ${req.params.schedule}`)
-    }
-    else if (exIndex < 0) // if the schedule doesn't exist
-    {
-        res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
-    }
+        sdata = getScheduleData(j2data); // get up to date schedule data
 
-    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
+        const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
+
+        if (exIndex >= 0) // if the schedule exists
+        {
+            sdata = sdata.filter(s => s.name != req.params.schedule); // retain all array elements except the one with the specified name
+            res.send(`Deleted schedule with name: ${req.params.schedule}`)
+        }
+        else if (exIndex < 0) // if the schedule doesn't exist
+        {
+            res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+        }
+
+        setScheduleData(sdata, sfile); // send updated schedules array to JSON file
+    }
+    else
+    {
+        res.status(400).send("Invalid input!");
+    }
 });
 
 srouter.get("/", (req, res) => { // get a list of schedule names and the number of courses in each Q8
@@ -318,9 +353,28 @@ function setScheduleData(array, file)
     })
 };
 
-// function to validate input
+// function to alphanumeric input
 function validateInput(input) 
 { 
-    return true; // TODO
+    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")"))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 };
 
+// function to validate numeric input
+function validateNumInput(input)
+{
+    if ((/^[0-9]+$/.test(input)) && (input > 0))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}

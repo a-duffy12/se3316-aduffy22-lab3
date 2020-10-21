@@ -235,20 +235,20 @@ function deleteAllSchedules()
 // function to sanitize alphanumeric input on the front end
 function sanitize(input)
 {
-    if (/^[a-zA-Z0-9]+$/.test(input))
+    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")"))
     {
-        return true;
+        return false;
     }
     else
     {
-        return false;
+        return true;
     }
 }
 
 // function to sanitize numerical input on the front end
 function sanitizeNum(input)
 {
-    if ((/^[0-9]+$/.text(input)) && (input > 0))
+    if ((/^[0-9]+$/.test(input)) && (input > 0))
     {
         return true;
     }
