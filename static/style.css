@@ -1,0 +1,46 @@
+header {
+    color: #eeeeee;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 48px;
+    text-shadow: /* give the text an outline */
+		-1px -1px 0 #000000,
+		1px -1px 0 #000000,
+		-1px 1px 0 #000000,
+		1px 1px 0 #000000;
+}
+
+body {
+    background-color: #800080;
+}
+
+#button-list {
+    list-style-type: none;
+    padding: 10px 80px 10px 80px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+#button-list li {
+    margin: 20px;
+}
+
+#button-list li button {
+    background-color: #eeeeee;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#output {
+    margin: 20px;
+}
+
+footer {
+    text-align: center;
+}
