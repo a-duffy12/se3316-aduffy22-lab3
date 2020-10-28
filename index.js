@@ -189,140 +189,184 @@ crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetabl
     
 });
 
-srouter.post("/:schedule", (req, res) => { // create a new schedule with a given name Q4
+//Q4 + Q5 + Q6 + Q7
+srouter.route("/:schedule") // all routes that access a particular schedule
+    .post((req, res) => { // create a new schedule with a given name Q4
 
-    sdata = getScheduleData(j2data); // get up to date schedule data
+        if (sanitizeInput(req.params.schedule) && sanitizeInput(req.body)) // both header and body are valid
+        {
+            sdata = getScheduleData(j2data); // get up to date schedule data
 
-    const newSchedule = req.body; // get info for the updated schedule
-    newSchedule.name = req.params.schedule; // get name for the updated schedule
+            const newSchedule = req.body; // get info for the updated schedule
+            newSchedule.name = req.params.schedule; // get name for the updated schedule
 
-    const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index of existing schedule of same name
+            const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index of existing schedule of same name
 
-    if (exIndex >= 0) // if schedule already exists
-    {
-        res.status(404).send(`Schedule already exists with name: ${newSchedule.name}`);
-    }
-    else if (exIndex < 0) // create a new schedule
-    {
-        sdata.push(newSchedule); // add new schedule to the array
-        res.send(`Created schedule with name: ${newSchedule.name}`);
-    }
+            if (exIndex >= 0) // if schedule already exists
+            {
+                res.status(400).send(`Schedule already exists with name: ${newSchedule.name}`);
+            }
+            else if (exIndex < 0) // create a new schedule
+            {
+                if (newSchedule.classes.length > 0) // if the schedule is not empty
+                {       
+                    sdata.push(newSchedule); // add new schedule to the array
+                    res.send(`Created schedule with name: ${newSchedule.name}`);
+                }
+                else // if schedule is empty
+                {
+                    res.status(400).send(`Empty schedule not permitted, cannot create schedule with name: ${newSchedule.name}`)
+                }    
+            }
 
-    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
-});
+            setScheduleData(sdata, sfile); // send updated schedules array to JSON file
+        }
+        else if (sanitizeInput(req.params.schedule)) // only header is valid
+        {
+            res.status(400).send("Schedule cannot be created due to inavlid input in request body");
+        }
+        else if (sanitizeInput(req.body)) // only body is valid
+        {
+            res.status(400).send("Schedule cannot be created due to invalid input in request header");
+        }
+        else // neither header nor body are valid
+        {
+            res.status(400).send("Schedule cannot be created due to invalid input in request header and request body");
+        }
+    })
+    .put((req, res) => { // save a schedule by overwriting an existing one Q5
 
-srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting an existing one Q5
-
-    sdata = getScheduleData(j2data); // get up to date schedule data
-
-    const newSchedule = req.body; // get info for the new schedule
-    newSchedule.name = req.params.schedule; // set name for new schedule
-
-    const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index existing schedule of same name
+        if (sanitizeInput(req.params.schedule) && sanitizeInput(req.body)) // both header and body are valid
+        {
+            sdata = getScheduleData(j2data); // get up to date schedule data
     
-    if (exIndex >= 0) // if the schedule does exist
-    {
-        sdata[exIndex] = newSchedule; // replace existing schedule with updated schedule
-        res.send(`Updated schedule with name: ${newSchedule.name}`);
-    }
-    else if (exIndex < 0) // if the schedule does not exist
-    {
-        res.status(404).send(`No schedule found with name: ${newSchedule.name}`);
-    }
-
-    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
-});
-
-srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pairs in given schedule Q6
-
-    if (sanitizeInput(req.params.schedule))
-    {
-        sdata = getScheduleData(j2data); // get up to date schedule data
-
-        const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
-
-        if (exIndex >= 0) // if the schedule exists
-        {
-            res.send(sdata[exIndex].classes); // send array of class pairs from specified schedule
+            const newSchedule = req.body; // get info for the new schedule
+            newSchedule.name = req.params.schedule; // set name for new schedule
+        
+            const exIndex = sdata.findIndex(s => s.name === newSchedule.name); // find index existing schedule of same name
+        
+            if (exIndex >= 0) // if the schedule does exist
+            {
+                if (newSchedule.classes.length > 0) // if the schedule is not empty
+                {
+                    sdata[exIndex] = newSchedule; // replace existing schedule with updated schedule
+                    res.send(`Updated schedule with name: ${newSchedule.name}`);
+                }
+                else // if schedule is empty
+                {
+                    res.status(400).send(`Empty schedule not permitted, cannot update schedule with name: ${newSchedule.name}`)
+                } 
+            }
+            else if (exIndex < 0) // if the schedule does not exist
+            {
+                res.status(404).send(`No schedule found with name: ${newSchedule.name}`);
+            }
+        
+            setScheduleData(sdata, sfile); // send updated schedules array to JSON file    
         }
-        else if (exIndex < 0) // if the schedule doesn't exist
+        else if (sanitizeInput(req.params.schedule)) // only header is valid
         {
-            res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+            res.status(400).send("Schedule cannot be updated due to inavlid input in request body");
         }
-    }
-    else
-    {
-        res.status(400).send("Invalid input!");    
-    }
-});
+        else if (sanitizeInput(req.body)) // only body is valid
+        {
+            res.status(400).send("Schedule cannot be updated due to invalid input in request header");
+        }
+        else // neither header nor body are valid
+        {
+            res.status(400).send("Schedule cannot be updated due to invalid input in request header and request body");
+        }
+    })
+    .get((req, res) => { // get list of subject and catalog pairs in given schedule Q6
 
-srouter.delete("/:schedule", (req, res) => { // delete a schedule with given name Q7
+        if (sanitizeInput(req.params.schedule))
+        {
+            sdata = getScheduleData(j2data); // get up to date schedule data
+    
+            const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
+    
+            if (exIndex >= 0) // if the schedule exists
+            {
+                res.send(sdata[exIndex].classes); // send array of class pairs from specified schedule
+            }
+            else if (exIndex < 0) // if the schedule doesn't exist
+            {
+                res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+            }
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");    
+        }
+    })
+    .delete( (req, res) => { // delete a schedule with given name Q7
    
-    if (sanitizeInput(req.params.schedule))
-    {
+        if (sanitizeInput(req.params.schedule))
+        {
+            sdata = getScheduleData(j2data); // get up to date schedule data
+    
+            const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
+    
+            if (exIndex >= 0) // if the schedule exists
+            {
+                sdata = sdata.filter(s => s.name != req.params.schedule); // retain all array elements except the one with the specified name
+                res.send(`Deleted schedule with name: ${req.params.schedule}`)
+            }
+            else if (exIndex < 0) // if the schedule doesn't exist
+            {
+                res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+            }
+    
+            setScheduleData(sdata, sfile); // send updated schedules array to JSON file
+        }
+        else
+        {
+            res.status(400).send("Invalid input!");
+        }
+    })
+
+// Q8 + Q9
+srouter.route("/") // all routes that access all schedules
+    .get((req, res) => { // get a list of schedule names and the number of courses in each Q8
+
         sdata = getScheduleData(j2data); // get up to date schedule data
 
-        const exIndex = sdata.findIndex(s => s.name === req.params.schedule); // find index of existing schedule of same name
+        if (sdata.length > 0) // if there are saved schedules
+        {
+            let schedules = []; // empty array of schedule objects
 
-        if (exIndex >= 0) // if the schedule exists
-        {
-            sdata = sdata.filter(s => s.name != req.params.schedule); // retain all array elements except the one with the specified name
-            res.send(`Deleted schedule with name: ${req.params.schedule}`)
+            for (s in sdata)
+            {
+                const obj = {}; // create empty object
+                obj.name = sdata[s].name; // add schedule name
+                obj.course_count = sdata[s].classes.length; // add number of classes
+                schedules.push(obj); // add object to array
+            }
+
+            res.send(schedules); // send the new array to the front end
         }
-        else if (exIndex < 0) // if the schedule doesn't exist
+        else // if there are no saved schedules
         {
-            res.status(404).send(`No schedule found with name: ${req.params.schedule}`);
+            res.status(404).send("No schedules exist");
+        }
+    })
+    .delete((req, res) => { // delete all created schedules
+
+        sdata = getScheduleData(j2data); // get up to date schedule data
+
+        if (sdata.length > 0) // if there are saved schedules
+        {
+            sdata.length = 0; // delete all schedule elements
+
+            res.send("Deleted all schedules");
+        }
+        else // if there are no saved schedules
+        {
+            res.status(404).send("No schedules exist");
         }
 
         setScheduleData(sdata, sfile); // send updated schedules array to JSON file
-    }
-    else
-    {
-        res.status(400).send("Invalid input!");
-    }
-});
-
-srouter.get("/", (req, res) => { // get a list of schedule names and the number of courses in each Q8
-
-    sdata = getScheduleData(j2data); // get up to date schedule data
-
-    if (sdata.length > 0) // if there are saved schedules
-    {
-        let schedules = []; // empty array of schedule objects
-
-        for (s in sdata)
-        {
-            const obj = {}; // create empty object
-            obj.name = sdata[s].name; // add schedule name
-            obj.course_count = sdata[s].classes.length; // add number of classes
-            schedules.push(obj); // add object to array
-        }
-
-        res.send(schedules); // send the new array to the front end
-    }
-    else // if there are no saved schedules
-    {
-        res.status(404).send("No schedules exist");
-    }
-});
-
-srouter.delete("/", (req, res) => {
-
-    sdata = getScheduleData(j2data); // get up to date schedule data
-
-    if (sdata.length > 0) // if there are saved schedules
-    {
-        sdata.length = 0; // delete all schedule elements
-
-        res.send("Deleted all schedules");
-    }
-    else // if there are no saved schedules
-    {
-        res.status(404).send("No schedules exist");
-    }
-
-    setScheduleData(sdata, sfile); // send updated schedules array to JSON file
-});
+    })
 
 app.use("/api/courses", crouter); // install router object path for courses
 app.use("/api/schedules", srouter) // install router object path for schedules
@@ -356,7 +400,7 @@ function setScheduleData(array, file)
 // function to alphanumeric input
 function sanitizeInput(input) 
 { 
-    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")") || input.includes("*"))
+    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes("-"))
     {
         return false;
     }
