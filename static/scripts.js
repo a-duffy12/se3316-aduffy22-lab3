@@ -51,7 +51,7 @@ function displayCourseCodes()
 {
     let subject = prompt("Please enter a subject code: "); // prompt user for a subject 
 
-    if (sanitize(subject))
+    if (validate(subject))
     {
         clear();
 
@@ -83,7 +83,7 @@ function displayTimeTableFull()
     let subject = prompt("Please enter a subject code: ");
     let catalog = prompt("Please enter a catalog number: ");
 
-    if (sanitize(subject) && sanitize(catalog))
+    if (validate(subject) && validate(catalog))
     {
         clear();
 
@@ -102,11 +102,11 @@ function displayTimeTableFull()
             .then(output.appendChild(data))
             .catch(error => console.error("Error: " + error));
     } 
-    else if (sanitize(subject))
+    else if (validate(subject))
     {
         alert("Invalid input for field(s): catalog number!");
     }
-    else if (sanitize(catalog))
+    else if (validate(catalog))
     {
         alert("Invalid input for field(s): subject code!");
     }
@@ -123,7 +123,7 @@ function displayTimeTableMini()
     let catalog = prompt("Please enter a catalog number: ");
     let component = prompt("Please enter a course component: ");
 
-    if (sanitize(subject) && sanitize(catalog) && sanitize(component))
+    if (validate(subject) && validate(catalog) && validate(component))
     {
         clear();
 
@@ -142,27 +142,27 @@ function displayTimeTableMini()
             .then(output.appendChild(data))
             .catch(error => console.error("Error: " + error));
     } 
-    else if (sanitize(subject) && sanitize(component))
+    else if (validate(subject) && validate(component))
     {
         alert("Invalid input for field(s): catalog number!");
     }
-    else if (sanitize(catalog) && sanitize(component))
+    else if (validate(catalog) && validate(component))
     {
         alert("Invalid input for field(s): subject code!");
     }
-    else if (sanitize(subject) && sanitize(catalog))
+    else if (validate(subject) && validate(catalog))
     {
         alert("Invalid input for field(s): component!");
     }
-    else if (sanitize(component))
+    else if (validate(component))
     {
         alert("Invalid input for field(s): subject code, catalog number");
     }
-    else if (sanitize(subject))
+    else if (validate(subject))
     {
         alert("Invalid input for field(s): catalog number, component");
     }
-    else if (sanitize(catalog))
+    else if (validate(catalog))
     {
         alert("Invalid input for field(s): subject code, component");
     }
@@ -184,7 +184,7 @@ function deleteSchedule()
 {
     let schedule = prompt("Please enter a schedule name: ");
 
-    if (sanitize(schedule))
+    if (validate(schedule))
     {
         clear();
 
@@ -233,9 +233,9 @@ function deleteAllSchedules()
 }
 
 // function to sanitize alphanumeric input on the front end
-function sanitize(input)
+function validate(input)
 {
-    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")"))
+    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")") || input.includes("*"))
     {
         return false;
     }
@@ -246,7 +246,7 @@ function sanitize(input)
 }
 
 // function to sanitize numerical input on the front end
-function sanitizeNum(input)
+function validateNum(input)
 {
     if ((/^[0-9]+$/.test(input)) && (input > 0))
     {

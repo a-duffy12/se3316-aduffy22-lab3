@@ -37,7 +37,7 @@ crouter.get("/", (req, res) => { // get all subjects and course codes Q1
 
 crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subject Q2
 
-    if (validateInput(req.params.subject))
+    if (sanitizeInput(req.params.subject))
     {
         let catalog = []; // empty string variable to return
 
@@ -68,7 +68,7 @@ crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subj
 
 crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog Q3a
 
-    if (validateInput(req.params.subject) && validateInput(req.params.catalog))
+    if (sanitizeInput(req.params.subject) && sanitizeInput(req.params.catalog))
     {
         let timetables = [];
         let sub = false;
@@ -124,7 +124,7 @@ crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for
 
 crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog Q3b
 
-    if (validateInput(req.params.subject) && validateInput(req.params.catalog) && validateInput(req.params.component))
+    if (sanitizeInput(req.params.subject) && sanitizeInput(req.params.catalog) && sanitizeInput(req.params.component))
     {
         let timetables = [];
         let sub = false;
@@ -235,7 +235,7 @@ srouter.put("/:schedule", (req, res) => { // save a schedule by overwriting an e
 
 srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pairs in given schedule Q6
 
-    if (validateInput(req.params.schedule))
+    if (sanitizeInput(req.params.schedule))
     {
         sdata = getScheduleData(j2data); // get up to date schedule data
 
@@ -258,7 +258,7 @@ srouter.get("/:schedule", (req, res) => { // get list of subject and catalog pai
 
 srouter.delete("/:schedule", (req, res) => { // delete a schedule with given name Q7
    
-    if (validateInput(req.params.schedule))
+    if (sanitizeInput(req.params.schedule))
     {
         sdata = getScheduleData(j2data); // get up to date schedule data
 
@@ -354,9 +354,9 @@ function setScheduleData(array, file)
 };
 
 // function to alphanumeric input
-function validateInput(input) 
+function sanitizeInput(input) 
 { 
-    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")"))
+    if (input.includes("{") || input.includes("}") || input.includes("[") || input.includes("]") || input.includes("<") || input.includes(">") ||input.includes(";") || input.includes(".") || input.includes(",") || input.includes("/") || input.includes("(") || input.includes(")") || input.includes("*"))
     {
         return false;
     }
@@ -367,7 +367,7 @@ function validateInput(input)
 };
 
 // function to validate numeric input
-function validateNumInput(input)
+function sanitizeNumInput(input)
 {
     if ((/^[0-9]+$/.test(input)) && (input > 0))
     {
