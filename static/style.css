@@ -37,6 +37,10 @@ body {
     font-size: 20px;
 }
 
+#button-list li button:hover {
+    background-color: #cccccc;
+}
+
 #output {
     margin: 20px;
 }

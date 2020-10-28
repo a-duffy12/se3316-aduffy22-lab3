@@ -1,34 +1,23 @@
 // front-end js file
 
-// get DOM objects for each function
+// get DOM objects for each function and apply event handlers
 let output = document.getElementById("output"); // field to print output to
-let buttonQ1 = document.getElementById("buttonQ1");
-let buttonQ2 = document.getElementById("buttonQ2");
-let buttonQ3 = document.getElementById("buttonQ3")
+let outTitle = document.getElementById("out-title"); // header to hold title for output
+let outList = document.getElementById("out-list"); // ordered list to print output into
+let buttonQ1 = document.getElementById("buttonQ1").addEventListener("click", displayCourses);
+let buttonQ2 = document.getElementById("buttonQ2").addEventListener("click", displayCourseCodes);
+let buttonQ3 = document.getElementById("buttonQ3").addEventListener("click", displayTimeTable);
 let buttonQ4 = document.getElementById("buttonQ4");
 let buttonQ5 = document.getElementById("buttonQ5");
-let buttonQ6 = document.getElementById("buttonQ6");
-let buttonQ7 = document.getElementById("buttonQ7");
-let buttonQ8 = document.getElementById("buttonQ8");
-let buttonQ9 = document.getElementById("buttonQ9");
-
-// event handlers for each function
-buttonQ1.addEventListener("click", displayCourses);
-buttonQ2.addEventListener("click", displayCourseCodes);
-buttonQ3.addEventListener("click", displayTimeTable);
-
-
-buttonQ6.addEventListener("click", displaySchedule);
-buttonQ7.addEventListener("click", deleteSchedule);
-buttonQ8.addEventListener("click", displayAllSchedules);
-buttonQ9.addEventListener("click", deleteAllSchedules);
+let buttonQ6 = document.getElementById("buttonQ6").addEventListener("click", displaySchedule);
+let buttonQ7 = document.getElementById("buttonQ7").addEventListener("click", deleteSchedule);
+let buttonQ8 = document.getElementById("buttonQ8").addEventListener("click", displayAllSchedules);
+let buttonQ9 = document.getElementById("buttonQ9").addEventListener("click", deleteAllSchedules);
 
 // function to print all subjects + classnames q1
 function displayCourses()
 {
     clear();
-
-    let data = document.createTextNode("");
     
     let req = new Request("/api/courses", {
         method: "GET",
@@ -38,9 +27,15 @@ function displayCourses()
     });
 
     fetch(req)
-        .then(res => res.text())
-        .then(cons => data.textContent = cons)
-        .then(output.appendChild(data))
+        .then(res => res.json())
+        .then(data => {
+            outTitle.appendChild(document.createTextNode("Displaying all courses"));
+            data.forEach(d => {
+                let el = document.createElement("li"); // create empty list element
+                el.appendChild(document.createTextNode(`Subject is ${d.subject}, course code is ${d.catalog}`)); // create text for list element
+                outList.appendChild(el); // add new element to list
+            })
+        })
         .catch(error => console.error("Error: " + error));
 }
 
@@ -52,9 +47,7 @@ function displayCourseCodes()
     if (validate(subject))
     {
         clear();
-
-        let data = document.createTextNode("");
-        
+       
         let req = new Request("/api/courses/" + subject, {
             
             method: "GET",
@@ -64,9 +57,15 @@ function displayCourseCodes()
         });
 
         fetch(req)
-            .then(res => res.text())
-            .then(cons => data.textContent = cons)
-            .then(output.appendChild(data))
+            .then(res => res.json())
+            .then(data => {
+                outTitle.appendChild(document.createTextNode(`Displaying all course codes in ${subject}`)); // list which subject's courses are being displayed
+                data.forEach(d => {
+                    let el = document.createElement("li"); // create empty list element
+                    el.appendChild(document.createTextNode(`${d.catalog}`)); // create text for list element
+                    outList.appendChild(el); // add new element to list 
+                })
+            })
             .catch(error => console.error("Error:" + error));
     }
     else 
@@ -85,7 +84,7 @@ function displayTimeTable()
 
     if (longV.toLocaleLowerCase() != "yes")
     {
-            if (validate(subject) && validate(catalog))
+        if (validate(subject) && validate(catalog))
         {
             clear();
 
@@ -99,9 +98,22 @@ function displayTimeTable()
             });
 
             fetch(req)
-                .then(res => res.text())
-                .then(cons => data.textContent = cons)
-                .then(output.appendChild(data))
+                .then(res => res.json())
+                .then(data => {
+                    outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
+                    data.forEach(d => {
+                        let el = document.createElement("li"); // create empty list element
+                        let ol = document.createElement("ol"); // create empty ordered list
+                        el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
+                        (d.times).forEach( t => {
+                            let el2 = document.createElement("li"); // create empty list element
+                            el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
+                            ol.appendChild(el2);
+                        })
+                        el.appendChild(ol); // add new list into larger list element
+                        outList.appendChild(el); // add new element to list 
+                    })
+                })
                 .catch(error => console.error("Error: " + error));
         } 
         else if (validate(subject))
@@ -135,9 +147,22 @@ function displayTimeTable()
             });
 
             fetch(req)
-                .then(res => res.text())
-                .then(cons => data.textContent = cons)
-                .then(output.appendChild(data))
+                .then(res => res.json())
+                .then(data => {
+                    outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
+                    data.forEach(d => {
+                        let el = document.createElement("li"); // create empty list element
+                        let ol = document.createElement("ol"); // create empty ordered list
+                        el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
+                        (d.times).forEach( t => {
+                            let el2 = document.createElement("li"); // create empty list element
+                            el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
+                            ol.appendChild(el2);
+                        })
+                        el.appendChild(ol); // add new list into larger list element
+                        outList.appendChild(el); // add new element to list 
+                    })
+                })
                 .catch(error => console.error("Error: " + error));
         } 
         else if (validate(subject) && validate(component))
@@ -185,7 +210,6 @@ function displaySchedule()
     {
         clear();
 
-        let data = document.createTextNode("");
         let req = new Request("/api/schedules/" + schedule, {
             
             method: "GET",
@@ -195,9 +219,15 @@ function displaySchedule()
         });
 
         fetch(req)
-            .then(res => res.text())
-            .then(cons => data.textContent = cons)
-            .then(output.appendChild(data))
+            .then(res => res.json())
+            .then(data => {
+                outTitle.appendChild(document.createTextNode(`Schedule ${schedule}`));
+                data.forEach(d => {
+                    let el = document.createElement("li"); // create empty list element
+                    el.appendChild(document.createTextNode(`${d.subject_code} - ${d.course_code}`)); // create text for list element
+                    outList.appendChild(el); // add new element to list
+                })
+            })
             .catch(error => console.error("Error: " + error));
     }
     else 
@@ -215,7 +245,6 @@ function deleteSchedule()
     {
         clear();
 
-        let data = document.createTextNode("");
         let req = new Request("/api/schedules/" + schedule, {
             
             method: "DELETE",
@@ -226,8 +255,7 @@ function deleteSchedule()
 
         fetch(req)
             .then(res => res.text())
-            .then(cons => data.textContent = cons)
-            .then(output.appendChild(data))
+            .then(data => { outTitle.appendChild(document.createTextNode(data));})
             .catch(error => console.error("Error: " + error));
     }
     else 
@@ -241,7 +269,6 @@ function displayAllSchedules()
 {
     clear();
 
-    let data = document.createTextNode("");
     let req = new Request("/api/schedules", {
         
         method: "GET",
@@ -251,9 +278,15 @@ function displayAllSchedules()
     });
 
     fetch(req)
-        .then(res => res.text())
-        .then(cons => data.textContent = cons)
-        .then(output.appendChild(data))
+        .then(res => res.json())
+        .then(data => {
+            outTitle.appendChild(document.createTextNode("Displaying all schedules"));
+            data.forEach(d => {
+                let el = document.createElement("li"); // create empty list element
+                el.appendChild(document.createTextNode(`Schedule ${d.name} contains ${d.course_count} courses`)); // create text for list element
+                outList.appendChild(el); // add new element to list
+            })
+        })
         .catch(error => console.error("Error: " + error));
 }
 
@@ -262,7 +295,6 @@ function deleteAllSchedules()
 {
     clear();
 
-    let data = document.createTextNode("");
     let req = new Request("/api/schedules", {
             
         method: "DELETE",
@@ -273,8 +305,7 @@ function deleteAllSchedules()
 
     fetch(req)
         .then(res => res.text())
-        .then(cons => data.textContent = cons)
-        .then(output.appendChild(data))
+        .then(data => { outTitle.appendChild(document.createTextNode(data));})
         .catch(error => console.error("Error: " + error));
 }
 
@@ -307,5 +338,10 @@ function validateNum(input)
 // function to clear existing results
 function clear()
 {
-    output.textContent = "";
+    outTitle.textContent =  "";
+
+    while(outList.firstChild)
+    {
+        outList.removeChild(outList.firstChild);
+    }
 }
