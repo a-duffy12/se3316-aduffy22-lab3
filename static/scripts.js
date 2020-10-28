@@ -20,7 +20,7 @@ buttonQ3.addEventListener("click", displayTimeTable);
 
 buttonQ6.addEventListener("click", displaySchedule);
 buttonQ7.addEventListener("click", deleteSchedule);
-
+buttonQ8.addEventListener("click", displayAllSchedules);
 buttonQ9.addEventListener("click", deleteAllSchedules);
 
 // function to print all subjects + classnames q1
@@ -237,6 +237,25 @@ function deleteSchedule()
 }
 
 // function to list all schedule names and the number of courses within them q8
+function displayAllSchedules()
+{
+    clear();
+
+    let data = document.createTextNode("");
+    let req = new Request("/api/schedules", {
+        
+        method: "GET",
+        headers: new Headers ({
+            "Content-Type": "application/json"
+        })
+    });
+
+    fetch(req)
+        .then(res => res.text())
+        .then(cons => data.textContent = cons)
+        .then(output.appendChild(data))
+        .catch(error => console.error("Error: " + error));
+}
 
 // function to delete all schedules q9
 function deleteAllSchedules()
