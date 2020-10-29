@@ -101,8 +101,8 @@ function displayTimeTable()
         {
             clear();
 
-            let data = document.createTextNode("");
             let req = new Request("/api/courses/" + subject + "/" + catalog, {method: "GET"});
+            outList.setAttribute("id", "out-list-mod"); // change id for the output list to get different styling
 
             fetch(req)
                 .then(res => {
@@ -111,8 +111,10 @@ function displayTimeTable()
                         res.json()
                         .then(data => {
                             outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
+                            let i = 0; // create iterator for differently colored components
                             data.forEach(d => {
                                 let el = document.createElement("li"); // create empty list element
+                                el.setAttribute("id", `comp${i}`); // add unique tag to the list element
                                 let ul = document.createElement("ul"); // create empty ordered list
                                 el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
                                 (d.times).forEach( t => {
@@ -122,6 +124,7 @@ function displayTimeTable()
                                 })
                                 el.appendChild(ul); // add new list into larger list element
                                 outList.appendChild(el); // add new element to list 
+                                i++; // iterator for different colors of components
                             })
                         })
                         .catch(error => console.error("Error: " + error));
@@ -157,8 +160,8 @@ function displayTimeTable()
         {
             clear();
 
-            let data = document.createTextNode("");
             let req = new Request("/api/courses/" + subject + "/" + catalog + "/" + component, {method: "GET"});
+            outList.setAttribute("id", "out-list-mod"); // change id for the output list to get different styling
 
             fetch(req)
                 .then(res => {
@@ -166,19 +169,17 @@ function displayTimeTable()
                     {
                         res.json()
                         .then(data => {
-                            outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
-                            data.forEach(d => {
-                                let el = document.createElement("li"); // create empty list element
-                                let ul = document.createElement("ul"); // create empty ordered list
-                                el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
-                                (d.times).forEach( t => {
-                                    let el2 = document.createElement("li"); // create empty list element
-                                    el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
-                                    ul.appendChild(el2);
-                                })
-                                el.appendChild(ul); // add new list into larger list element
-                                outList.appendChild(el); // add new element to list 
+                            outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}, ${component} component`));
+                            let el = document.createElement("li"); // create empty list element
+                            let ul = document.createElement("ul"); // create empty ordered list
+                            el.appendChild(document.createTextNode(`Class number: ${data[0].number}`)); // create text for list element
+                            (data[0].times).forEach( t => {
+                                let el2 = document.createElement("li"); // create empty list element
+                                el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
+                                ul.appendChild(el2);
                             })
+                            el.appendChild(ul); // add new list into larger list element
+                            outList.appendChild(el); // add new element to list 
                         })
                         .catch(error => console.error("Error: " + error));
                     }
@@ -480,10 +481,11 @@ function validateNum(input)
 // function to clear existing results
 function clear()
 {
-    outTitle.textContent =  "";
+    outTitle.textContent =  ""; // clear header content
 
-    while(outList.firstChild)
+    while(outList.firstChild) // remove all list elements
     {
         outList.removeChild(outList.firstChild);
     }
+    outList.setAttribute("id", "out-list"); // reset id of output list
 }

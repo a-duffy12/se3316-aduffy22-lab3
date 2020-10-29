@@ -58,8 +58,26 @@ body ul {
     column-rule: 3px solid #eeeeee;
 }
 
+#out-list-mod {
+    list-style-type: none;
+    margin: 20px 0px 20px 0px;
+    text-align: center;
+}
+
 #out-list li {
     margin-bottom: 10px;
+}
+
+#comp0 {
+   color: red; 
+}
+
+#comp1 {
+    color: yellow;
+}
+
+#comp2 {
+    color: green;
 }
 
 footer {
