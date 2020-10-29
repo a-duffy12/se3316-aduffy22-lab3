@@ -51,7 +51,7 @@ function displayCourseCodes()
 {
     let subject = prompt("Please enter a subject code: "); // prompt user for a subject 
 
-    if (validate(subject))
+    if (validate(subject) && (subject.length < 9))
     {
         clear();
        
@@ -97,7 +97,7 @@ function displayTimeTable()
 
     if (longV.toLocaleLowerCase() != "yes")
     {
-        if (validate(subject) && validate(catalog))
+        if (validate(subject) && validate(catalog) && (subject.length < 9) && (catalog.length < 6))
         {
             clear();
 
@@ -139,11 +139,11 @@ function displayTimeTable()
                 .catch();
                     
         } 
-        else if (validate(subject))
+        else if (validate(subject) && (subject.length < 9))
         {
             alert("Invalid input for field(s): catalog number!");
         }
-        else if (validate(catalog))
+        else if (validate(catalog) && (catalog.length < 6))
         {
             alert("Invalid input for field(s): subject code!");
         }
@@ -156,7 +156,7 @@ function displayTimeTable()
     {
         let component = prompt("Please enter a course component: ");
 
-        if (validate(subject) && validate(catalog) && validate(component))
+        if (validate(subject) && validate(catalog) && validate(component) && (subject.length < 9) && (catalog.length < 6) && (component.length < 4))
         {
             clear();
 
@@ -192,27 +192,27 @@ function displayTimeTable()
                 })
                 .catch();
         } 
-        else if (validate(subject) && validate(component))
+        else if (validate(subject) && validate(component) && (subject.length < 9) && (component.length < 4))
         {
             alert("Invalid input for field(s): catalog number!");
         }
-        else if (validate(catalog) && validate(component))
+        else if (validate(catalog) && validate(component) && (catalog.length < 6) && (component.length < 4))
         {
             alert("Invalid input for field(s): subject code!");
         }
-        else if (validate(subject) && validate(catalog))
+        else if (validate(subject) && validate(catalog) && (subject.length < 9) && (catalog.length < 6))
         {
             alert("Invalid input for field(s): component!");
         }
-        else if (validate(component))
+        else if (validate(component) && (component.length < 4))
         {
             alert("Invalid input for field(s): subject code, catalog number");
         }
-        else if (validate(subject))
+        else if (validate(subject) && (subject.length < 9))
         {
             alert("Invalid input for field(s): catalog number, component");
         }
-        else if (validate(catalog))
+        else if (validate(catalog) && (catalog.length < 6))
         {
             alert("Invalid input for field(s): subject code, component");
         }
@@ -455,7 +455,7 @@ function deleteAllSchedules()
 // function to sanitize alphanumeric input on the front end
 function validate(input)
 {
-    if (String(input).includes("{") || String(input).includes("}") || String(input).includes("[") || String(input).includes("]") || String(input).includes("<") || String(input).includes(">") || String(input).includes(";") || String(input).includes(".") || String(input).includes(",") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes("-"))
+    if (String(input).includes("{") || String(input).includes("}") || String(input).includes("[") || String(input).includes("]") || String(input).includes("<") || String(input).includes(">") || String(input).includes(";") || String(input).includes(".") || String(input).includes(",") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_"))
     {
         return false;
     }
