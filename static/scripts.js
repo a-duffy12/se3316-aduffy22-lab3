@@ -8,7 +8,7 @@ let buttonQ1 = document.getElementById("buttonQ1").addEventListener("click", dis
 let buttonQ2 = document.getElementById("buttonQ2").addEventListener("click", displayCourseCodes);
 let buttonQ3 = document.getElementById("buttonQ3").addEventListener("click", displayTimeTable);
 let buttonQ4 = document.getElementById("buttonQ4").addEventListener("click", createSchedule);
-let buttonQ5 = document.getElementById("buttonQ5");
+let buttonQ5 = document.getElementById("buttonQ5").addEventListener("click", updateSchedule);
 let buttonQ6 = document.getElementById("buttonQ6").addEventListener("click", displaySchedule);
 let buttonQ7 = document.getElementById("buttonQ7").addEventListener("click", deleteSchedule);
 let buttonQ8 = document.getElementById("buttonQ8").addEventListener("click", displayAllSchedules);
@@ -181,14 +181,16 @@ function createSchedule()
 
     if (validate(name) && validateNum(count) && parseInt(count) < 16)
     {
+        clear();
+
         let sch = {}; // empty object to hold schedule data
         sch.classes = []; // empty array to hold class pairs
 
         for (let i=0; i<count; i++)
         {
             let pair = {}; // empty object to hold class pair
-            let ps = prompt("Please enter a subject: ");
-            let pc = prompt("Please enter a course code: ");
+            let ps = prompt(`Please enter subject ${i+1}: `);
+            let pc = prompt(`Please enter course code ${i+1}: `);
             pair.subject_code = ps;
             pair.course_code = pc;
             (sch.classes).push(pair); // add new course pair into schedule
@@ -233,6 +235,64 @@ function createSchedule()
 
 // function to save a list of subject+catalog pairs under a given name, should be used to
 // overwrite an existing schedule of the same name q5
+function updateSchedule()
+{
+    let name = prompt("Please enter the name of the schdule use wish to update: ");
+    let count = prompt("Please enter how many courses you would like to add (max 15):");
+
+    if (validate(name) && validateNum(count) && parseInt(count) < 16)
+    {
+        clear();
+
+        let sch = {}; // empty object to hold schedule data
+        sch.classes = []; // empty array to hold class pairs
+
+        for (let i=0; i<count; i++)
+        {
+            let pair = {}; // empty object to hold class pair
+            let ps = prompt(`Please enter subject ${i+1}: `);
+            let pc = prompt(`Please enter course code ${i+1}: `);
+            pair.subject_code = ps;
+            pair.course_code = pc;
+            (sch.classes).push(pair); // add new course pair into schedule
+        }
+
+        let req = new Request("/api/schedules/" + name, {
+            
+            method: "PUT",
+            headers: new Headers ({
+                "Content-Type": "application/json"
+            }),
+            body: JSON.stringify(sch)
+        }); 
+
+        console.log(sch);
+        fetch(req)
+            .then(res => res.text())
+            .then(data => { outTitle.appendChild(document.createTextNode(data));})
+            .catch(error => console.error("Error: " + error));
+    }
+    else if (validate(name) && validateNum(count))
+    {
+        alert("Invalid input, maximum number of courses is 15!");
+    }
+    else if (validate(name))
+    {
+        alert("Inavlid input, must enter a number between 1 and 15 for course count!");
+    }
+    else if (validateNum(count) && parseInt(count) < 16)
+    {
+        alert("Invalid input for schedule name!");
+    }
+    else if (validateNum(count))
+    {
+        alert("Invalid input for schedule name, and maximum number of courses is 15!");
+    }
+    else
+    {
+        alert("Invalid input for schedule name, and must enter a number between 1 and 15 for course count!")
+    }
+}
 
 // function to print the subject+catalog pairs in a given schedule q6
 function displaySchedule()
