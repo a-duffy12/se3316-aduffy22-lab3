@@ -22,16 +22,28 @@ function displayCourses()
     let req = new Request("/api/courses", {method: "GET"});
 
     fetch(req)
-        .then(res => res.json())
-        .then(data => {
-            outTitle.appendChild(document.createTextNode("Displaying all courses"));
-            data.forEach(d => {
-                let el = document.createElement("li"); // create empty list element
-                el.appendChild(document.createTextNode(`Subject is ${d.subject}, course code is ${d.catalog}`)); // create text for list element
-                outList.appendChild(el); // add new element to list
-            })
+        .then(res => {
+            if (res.ok) // if the response is a 200, output returned json
+            {
+                res.json()
+                .then(data => {
+                    outTitle.appendChild(document.createTextNode("Displaying all courses"));
+                    data.forEach(d => {
+                        let el = document.createElement("li"); // create empty list element
+                        el.appendChild(document.createTextNode(`Subject is ${d.subject}, course code is ${d.catalog}`)); // create text for list element
+                        outList.appendChild(el); // add new element to list
+                    })
+                })
+                .catch(error => console.error("Error: " + error));
+            }
+            else // if the response is not a 200, print the response
+            {
+                res.text()
+                .then(data => { outTitle.appendChild(document.createTextNode(data));})
+                .catch(error => console.error("Error: " + error));
+            }
         })
-        .catch(error => console.error("Error: " + error));
+        .catch();
 }
 
 // function to print all catalogs for a given subject q2
@@ -46,16 +58,28 @@ function displayCourseCodes()
         let req = new Request("/api/courses/" + subject, {method: "GET"});
 
         fetch(req)
-            .then(res => res.json())
-            .then(data => {
-                outTitle.appendChild(document.createTextNode(`Displaying all course codes in ${subject}`)); // list which subject's courses are being displayed
-                data.forEach(d => {
-                    let el = document.createElement("li"); // create empty list element
-                    el.appendChild(document.createTextNode(`${d.catalog}`)); // create text for list element
-                    outList.appendChild(el); // add new element to list 
-                })
+            .then(res => {
+                if (res.ok) // if the response is a 200, output returned json
+                {
+                    res.json()
+                    .then(data => {
+                        outTitle.appendChild(document.createTextNode(`Displaying all course codes in ${subject}`)); // list which subject's courses are being displayed
+                        data.forEach(d => {
+                            let el = document.createElement("li"); // create empty list element
+                            el.appendChild(document.createTextNode(`${d.catalog}`)); // create text for list element
+                            outList.appendChild(el); // add new element to list 
+                        })
+                    })
+                    .catch(error => console.error("Error:" + error));
+                }
+                else // if the response is not a 200, print the response
+                {
+                    res.text()
+                    .then(data => { outTitle.appendChild(document.createTextNode(data));})
+                    .catch(error => console.error("Error: " + error));
+                }
             })
-            .catch(error => console.error("Error:" + error));
+            .catch();       
     }
     else 
     {
@@ -81,23 +105,36 @@ function displayTimeTable()
             let req = new Request("/api/courses/" + subject + "/" + catalog, {method: "GET"});
 
             fetch(req)
-                .then(res => res.json())
-                .then(data => {
-                    outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
-                    data.forEach(d => {
-                        let el = document.createElement("li"); // create empty list element
-                        let ol = document.createElement("ol"); // create empty ordered list
-                        el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
-                        (d.times).forEach( t => {
-                            let el2 = document.createElement("li"); // create empty list element
-                            el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
-                            ol.appendChild(el2);
+                .then(res => {
+                    if (res.ok) // if the response is a 200, output returned json
+                    {
+                        res.json()
+                        .then(data => {
+                            outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
+                            data.forEach(d => {
+                                let el = document.createElement("li"); // create empty list element
+                                let ul = document.createElement("ul"); // create empty ordered list
+                                el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
+                                (d.times).forEach( t => {
+                                    let el2 = document.createElement("li"); // create empty list element
+                                    el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
+                                    ul.appendChild(el2);
+                                })
+                                el.appendChild(ul); // add new list into larger list element
+                                outList.appendChild(el); // add new element to list 
+                            })
                         })
-                        el.appendChild(ol); // add new list into larger list element
-                        outList.appendChild(el); // add new element to list 
-                    })
+                        .catch(error => console.error("Error: " + error));
+                    }
+                    else // if the response is not a 200, print the response
+                    {
+                        res.text()
+                        .then(data => { outTitle.appendChild(document.createTextNode(data));})
+                        .catch(error => console.error("Error: " + error));
+                    }
                 })
-                .catch(error => console.error("Error: " + error));
+                .catch();
+                    
         } 
         else if (validate(subject))
         {
@@ -124,23 +161,35 @@ function displayTimeTable()
             let req = new Request("/api/courses/" + subject + "/" + catalog + "/" + component, {method: "GET"});
 
             fetch(req)
-                .then(res => res.json())
-                .then(data => {
-                    outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
-                    data.forEach(d => {
-                        let el = document.createElement("li"); // create empty list element
-                        let ol = document.createElement("ol"); // create empty ordered list
-                        el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
-                        (d.times).forEach( t => {
-                            let el2 = document.createElement("li"); // create empty list element
-                            el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
-                            ol.appendChild(el2);
+                .then(res => {
+                    if (res.ok) // if the response is a 200, output returned json
+                    {
+                        res.json()
+                        .then(data => {
+                            outTitle.appendChild(document.createTextNode(`Displaying timetable data for ${subject}: ${catalog}`));
+                            data.forEach(d => {
+                                let el = document.createElement("li"); // create empty list element
+                                let ul = document.createElement("ul"); // create empty ordered list
+                                el.appendChild(document.createTextNode(`Class number: ${d.number}, component: ${d.component}`)); // create text for list element
+                                (d.times).forEach( t => {
+                                    let el2 = document.createElement("li"); // create empty list element
+                                    el2.appendChild(document.createTextNode(`${t.day}: ${t.start} - ${t.end}`));
+                                    ul.appendChild(el2);
+                                })
+                                el.appendChild(ul); // add new list into larger list element
+                                outList.appendChild(el); // add new element to list 
+                            })
                         })
-                        el.appendChild(ol); // add new list into larger list element
-                        outList.appendChild(el); // add new element to list 
-                    })
+                        .catch(error => console.error("Error: " + error));
+                    }
+                    else // if the response is not a 200, print the response
+                    {
+                        res.text()
+                        .then(data => { outTitle.appendChild(document.createTextNode(data));})
+                        .catch(error => console.error("Error: " + error));
+                    }
                 })
-                .catch(error => console.error("Error: " + error));
+                .catch();
         } 
         else if (validate(subject) && validate(component))
         {
@@ -306,16 +355,28 @@ function displaySchedule()
         let req = new Request("/api/schedules/" + schedule, {method: "GET"});
 
         fetch(req)
-            .then(res => res.json())
-            .then(data => {
-                outTitle.appendChild(document.createTextNode(`Schedule ${schedule}`));
-                data.forEach(d => {
-                    let el = document.createElement("li"); // create empty list element
-                    el.appendChild(document.createTextNode(`${d.subject_code} - ${d.course_code}`)); // create text for list element
-                    outList.appendChild(el); // add new element to list
-                })
+            .then(res => {
+                if (res.ok) // if the response is a 200, output returned json
+                {
+                    res.json()
+                    .then(data => {
+                        outTitle.appendChild(document.createTextNode(`Schedule ${schedule}`));
+                        data.forEach(d => {
+                            let el = document.createElement("li"); // create empty list element
+                            el.appendChild(document.createTextNode(`${d.subject_code} - ${d.course_code}`)); // create text for list element
+                            outList.appendChild(el); // add new element to list
+                        })
+                    })
+                    .catch(error => console.error("Error: " + error));
+                }
+                else // if the response is not a 200, print the response
+                {
+                    res.text()
+                    .then(data => { outTitle.appendChild(document.createTextNode(data));})
+                    .catch(error => console.error("Error: " + error));
+                }
             })
-            .catch(error => console.error("Error: " + error));
+            .catch();
     }
     else 
     {
@@ -353,16 +414,28 @@ function displayAllSchedules()
     let req = new Request("/api/schedules", {method: "GET"});
 
     fetch(req)
-        .then(res => res.json())
-        .then(data => {
-            outTitle.appendChild(document.createTextNode("Displaying all schedules"));
-            data.forEach(d => {
-                let el = document.createElement("li"); // create empty list element
-                el.appendChild(document.createTextNode(`Schedule ${d.name} contains ${d.course_count} courses`)); // create text for list element
-                outList.appendChild(el); // add new element to list
-            })
+        .then(res => {
+            if (res.ok) // if the response is a 200, output returned json
+            {
+                res.json()
+                .then(data => {
+                    outTitle.appendChild(document.createTextNode("Displaying all schedules"));
+                    data.forEach(d => {
+                        let el = document.createElement("li"); // create empty list element
+                        el.appendChild(document.createTextNode(`Schedule ${d.name} contains ${d.course_count} courses`)); // create text for list element
+                        outList.appendChild(el); // add new element to list
+                    })
+                })
+                .catch(error => console.error("Error: " + error));
+            }
+            else // if the response is not a 200, print the response
+            {
+                res.text()
+                .then(data => { outTitle.appendChild(document.createTextNode(data));})
+                .catch(error => console.error("Error: " + error));
+            }
         })
-        .catch(error => console.error("Error: " + error));
+        .catch();          
 }
 
 // function to delete all schedules q9

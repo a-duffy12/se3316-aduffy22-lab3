@@ -400,7 +400,8 @@ function setScheduleData(array, file)
 // function to alphanumeric input
 function sanitizeInput(input) 
 { 
-    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes("-"))
+    // limit is 1000 characters, as test cases with 15 courses (max amount) were always in the range of 700-800 characters
+    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes("-") && String(input).length < 1000)
     {
         return false;
     }
