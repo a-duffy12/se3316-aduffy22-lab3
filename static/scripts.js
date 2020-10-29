@@ -19,12 +19,7 @@ function displayCourses()
 {
     clear();
     
-    let req = new Request("/api/courses", {
-        method: "GET",
-        headers: new Headers ({
-            "Content-Type": "application/json"
-        })
-    });
+    let req = new Request("/api/courses", {method: "GET"});
 
     fetch(req)
         .then(res => res.json())
@@ -48,13 +43,7 @@ function displayCourseCodes()
     {
         clear();
        
-        let req = new Request("/api/courses/" + subject, {
-            
-            method: "GET",
-            headers: new Headers ({
-                "Content-Type": "application/json"
-            })
-        });
+        let req = new Request("/api/courses/" + subject, {method: "GET"});
 
         fetch(req)
             .then(res => res.json())
@@ -89,13 +78,7 @@ function displayTimeTable()
             clear();
 
             let data = document.createTextNode("");
-            let req = new Request("/api/courses/" + subject + "/" + catalog, {
-
-                method: "GET",
-                headers: new Headers ({
-                    "Content-Type": "application/json"
-                })
-            });
+            let req = new Request("/api/courses/" + subject + "/" + catalog, {method: "GET"});
 
             fetch(req)
                 .then(res => res.json())
@@ -138,13 +121,7 @@ function displayTimeTable()
             clear();
 
             let data = document.createTextNode("");
-            let req = new Request("/api/courses/" + subject + "/" + catalog + "/" + component, {
-
-                method: "GET",
-                headers: new Headers ({
-                    "Content-Type": "application/json"
-                })
-            });
+            let req = new Request("/api/courses/" + subject + "/" + catalog + "/" + component, {method: "GET"});
 
             fetch(req)
                 .then(res => res.json())
@@ -210,13 +187,7 @@ function displaySchedule()
     {
         clear();
 
-        let req = new Request("/api/schedules/" + schedule, {
-            
-            method: "GET",
-            headers: new Headers ({
-                "Content-Type": "application/json"
-            })
-        });
+        let req = new Request("/api/schedules/" + schedule, {method: "GET"});
 
         fetch(req)
             .then(res => res.json())
@@ -245,13 +216,7 @@ function deleteSchedule()
     {
         clear();
 
-        let req = new Request("/api/schedules/" + schedule, {
-            
-            method: "DELETE",
-            headers: new Headers ({
-                "Content-Type": "application/json"
-            })
-        });
+        let req = new Request("/api/schedules/" + schedule, {method: "DELETE"});
 
         fetch(req)
             .then(res => res.text())
@@ -269,13 +234,7 @@ function displayAllSchedules()
 {
     clear();
 
-    let req = new Request("/api/schedules", {
-        
-        method: "GET",
-        headers: new Headers ({
-            "Content-Type": "application/json"
-        })
-    });
+    let req = new Request("/api/schedules", {method: "GET"});
 
     fetch(req)
         .then(res => res.json())
@@ -295,13 +254,7 @@ function deleteAllSchedules()
 {
     clear();
 
-    let req = new Request("/api/schedules", {
-            
-        method: "DELETE",
-        headers: new Headers ({
-            "Content-Type": "application/json"
-        })
-    });
+    let req = new Request("/api/schedules", {method: "DELETE"});
 
     fetch(req)
         .then(res => res.text())

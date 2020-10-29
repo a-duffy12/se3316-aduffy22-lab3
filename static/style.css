@@ -41,10 +41,24 @@ body {
     background-color: #cccccc;
 }
 
-#output {
-    margin: 20px;
+#out-title {
+    text-align: center;
+    font-size: 24px;
+}
+
+#out-list {
+    list-style-type: none;
+    margin: 20px 0px 20px 0px;
+    text-align: center;
+    column-count: 3;
+    column-rule: 3px solid #eeeeee;
+}
+
+#out-list li {
+    margin-bottom: 10px;
 }
 
 footer {
+    margin-top: 80px;
     text-align: center;
 }
