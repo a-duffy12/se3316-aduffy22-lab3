@@ -30,7 +30,7 @@ function displayCourses()
                     outTitle.appendChild(document.createTextNode("Displaying all courses"));
                     data.forEach(d => {
                         let el = document.createElement("li"); // create empty list element
-                        el.appendChild(document.createTextNode(`Subject is ${d.subject}, course code is ${d.catalog}`)); // create text for list element
+                        el.appendChild(document.createTextNode(`${d.subject}: ${d.className}`)); // create text for list element
                         outList.appendChild(el); // add new element to list
                     })
                 })

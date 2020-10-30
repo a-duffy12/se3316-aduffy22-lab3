@@ -27,7 +27,7 @@ crouter.get("/", (req, res) => { // get all subjects and course codes Q1
     {
         let obj = {}; // create empty object
         obj.subject = cdata[c].subject; // add subject
-        obj.catalog = cdata[c].catalog_nbr; // add course code
+        obj.className = cdata[c].className; // add course code
         courses.push(obj); // add object to array
     }
 
