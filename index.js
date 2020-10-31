@@ -37,7 +37,7 @@ crouter.get("/", (req, res) => { // get all subjects and course codes Q1
 
 crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subject Q2
 
-    if (sanitizeInput(req.params.subject))
+    if (sanitizeInput(req.params.subject, 9))
     {
         let catalog = []; // empty string variable to return
 
@@ -68,7 +68,7 @@ crouter.get("/:subject", (req, res) => { // get catalog numbers for a given subj
 
 crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for a subjcet and catalog Q3a
 
-    if (sanitizeInput(req.params.subject) && sanitizeInput(req.params.catalog))
+    if (sanitizeInput(req.params.subject, 9) && sanitizeInput(req.params.catalog, 6))
     {
         let timetables = [];
         let sub = false;
@@ -124,7 +124,7 @@ crouter.get("/:subject/:catalog", (req, res) => { // get the timetable entry for
 
 crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetable entry for a subjcet and catalog Q3b
 
-    if (sanitizeInput(req.params.subject) && sanitizeInput(req.params.catalog) && sanitizeInput(req.params.component))
+    if (sanitizeInput(req.params.subject, 9) && sanitizeInput(req.params.catalog, 6) && sanitizeInput(req.params.component, 4))
     {
         let timetables = [];
         let sub = false;
@@ -193,7 +193,7 @@ crouter.get("/:subject/:catalog/:component", (req, res) => { // get the timetabl
 srouter.route("/:schedule") // all routes that access a particular schedule
     .post((req, res) => { // create a new schedule with a given name Q4
 
-        if (sanitizeInput(req.params.schedule) && sanitizeInput(req.body)) // both header and body are valid
+        if (sanitizeInput(req.params.schedule, 100) && sanitizeInput(req.body, 1000)) // both header and body are valid
         {
             sdata = getScheduleData(j2data); // get up to date schedule data
 
@@ -221,11 +221,11 @@ srouter.route("/:schedule") // all routes that access a particular schedule
 
             setScheduleData(sdata, sfile); // send updated schedules array to JSON file
         }
-        else if (sanitizeInput(req.params.schedule)) // only header is valid
+        else if (sanitizeInput(req.params.schedule, 100)) // only header is valid
         {
             res.status(400).send("Schedule cannot be created due to inavlid input in request body");
         }
-        else if (sanitizeInput(req.body)) // only body is valid
+        else if (sanitizeInput(req.body, 1000)) // only body is valid
         {
             res.status(400).send("Schedule cannot be created due to invalid input in request header");
         }
@@ -236,7 +236,7 @@ srouter.route("/:schedule") // all routes that access a particular schedule
     })
     .put((req, res) => { // save a schedule by overwriting an existing one Q5
 
-        if (sanitizeInput(req.params.schedule) && sanitizeInput(req.body)) // both header and body are valid
+        if (sanitizeInput(req.params.schedule, 100) && sanitizeInput(req.body, 1000)) // both header and body are valid
         {
             sdata = getScheduleData(j2data); // get up to date schedule data
     
@@ -264,11 +264,11 @@ srouter.route("/:schedule") // all routes that access a particular schedule
         
             setScheduleData(sdata, sfile); // send updated schedules array to JSON file    
         }
-        else if (sanitizeInput(req.params.schedule)) // only header is valid
+        else if (sanitizeInput(req.params.schedule, 100)) // only header is valid
         {
             res.status(400).send("Schedule cannot be updated due to inavlid input in request body");
         }
-        else if (sanitizeInput(req.body)) // only body is valid
+        else if (sanitizeInput(req.body, 1000)) // only body is valid
         {
             res.status(400).send("Schedule cannot be updated due to invalid input in request header");
         }
@@ -279,7 +279,7 @@ srouter.route("/:schedule") // all routes that access a particular schedule
     })
     .get((req, res) => { // get list of subject and catalog pairs in given schedule Q6
 
-        if (sanitizeInput(req.params.schedule))
+        if (sanitizeInput(req.params.schedule, 100))
         {
             sdata = getScheduleData(j2data); // get up to date schedule data
     
@@ -398,10 +398,10 @@ function setScheduleData(array, file)
 };
 
 // function to alphanumeric input
-function sanitizeInput(input) 
+function sanitizeInput(input, l) 
 { 
     // limit is 1000 characters, as test cases with 15 courses (max amount) were always in the range of 700-800 characters
-    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") && String(input).length < 1000)
+    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).length >= l)
     {
         return false;
     }
@@ -410,16 +410,3 @@ function sanitizeInput(input)
         return true;
     }
 };
-
-// function to validate numeric input
-function sanitizeNumInput(input)
-{
-    if ((/^[0-9]+$/.test(input)) && (input > 0))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}

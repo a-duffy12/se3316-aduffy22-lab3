@@ -51,7 +51,7 @@ function displayCourseCodes()
 {
     let subject = prompt("Please enter a subject code: "); // prompt user for a subject 
 
-    if (validate(subject) && (subject.length < 9))
+    if (validate(subject, 9))
     {
         clear();
        
@@ -97,7 +97,7 @@ function displayTimeTable()
 
     if (longV.toLocaleLowerCase() != "yes")
     {
-        if (validate(subject) && validate(catalog) && (subject.length < 9) && (catalog.length < 6))
+        if (validate(subject, 9) && validate(catalog, 6))
         {
             clear();
 
@@ -139,11 +139,11 @@ function displayTimeTable()
                 .catch();
                     
         } 
-        else if (validate(subject) && (subject.length < 9))
+        else if (validate(subject, 9))
         {
             alert("Invalid input for field(s): catalog number!");
         }
-        else if (validate(catalog) && (catalog.length < 6))
+        else if (validate(catalog, 6))
         {
             alert("Invalid input for field(s): subject code!");
         }
@@ -156,7 +156,7 @@ function displayTimeTable()
     {
         let component = prompt("Please enter a course component: ");
 
-        if (validate(subject) && validate(catalog) && validate(component) && (subject.length < 9) && (catalog.length < 6) && (component.length < 4))
+        if (validate(subject, 9) && validate(catalog, 6) && validate(component, 4))
         {
             clear();
 
@@ -192,27 +192,27 @@ function displayTimeTable()
                 })
                 .catch();
         } 
-        else if (validate(subject) && validate(component) && (subject.length < 9) && (component.length < 4))
+        else if (validate(subject, 9) && validate(component, 4))
         {
             alert("Invalid input for field(s): catalog number!");
         }
-        else if (validate(catalog) && validate(component) && (catalog.length < 6) && (component.length < 4))
+        else if (validate(catalog, 6) && validate(component, 4))
         {
             alert("Invalid input for field(s): subject code!");
         }
-        else if (validate(subject) && validate(catalog) && (subject.length < 9) && (catalog.length < 6))
+        else if (validate(subject, 9) && validate(catalog, 6))
         {
             alert("Invalid input for field(s): component!");
         }
-        else if (validate(component) && (component.length < 4))
+        else if (validate(component, 4))
         {
             alert("Invalid input for field(s): subject code, catalog number");
         }
-        else if (validate(subject) && (subject.length < 9))
+        else if (validate(subject, 9))
         {
             alert("Invalid input for field(s): catalog number, component");
         }
-        else if (validate(catalog) && (catalog.length < 6))
+        else if (validate(catalog, 6))
         {
             alert("Invalid input for field(s): subject code, component");
         }
@@ -226,10 +226,10 @@ function displayTimeTable()
 // function to create a new schedule with subject+catalog pairs and a given name q4
 function createSchedule()
 {
-    let name = prompt("Please enter a name for your schedule: ");
+    let name = prompt("Please enter a name for your schedule (max 100 chars): ");
     let count = prompt("Please enter how many courses you would like to add (max 15):");
 
-    if (validate(name) && validateNum(count) && parseInt(count) < 16)
+    if (validate(name, 101) && validateNum(count, 16))
     {
         clear();
 
@@ -261,25 +261,17 @@ function createSchedule()
             .then(data => { outTitle.appendChild(document.createTextNode(data));})
             .catch(error => console.error("Error: " + error));
     }
-    else if (validate(name) && validateNum(count))
+    else if (validate(name, 101))
     {
-        alert("Invalid input, maximum number of courses is 15!");
+        alert("Inavlid input for course count!");
     }
-    else if (validate(name))
-    {
-        alert("Inavlid input, must enter a number between 1 and 15 for course count!");
-    }
-    else if (validateNum(count) && parseInt(count) < 16)
+    else if (validateNum(count, 16))
     {
         alert("Invalid input for schedule name!");
     }
-    else if (validateNum(count))
-    {
-        alert("Invalid input for schedule name, and maximum number of courses is 15!");
-    }
     else
     {
-        alert("Invalid input for schedule name, and must enter a number between 1 and 15 for course count!")
+        alert("Invalid input for schedule name and course count!")
     }
 }
 
@@ -287,10 +279,10 @@ function createSchedule()
 // overwrite an existing schedule of the same name q5
 function updateSchedule()
 {
-    let name = prompt("Please enter the name of the schdule use wish to update: ");
+    let name = prompt("Please enter the name of the schdule use wish to update (max 100 chars): ");
     let count = prompt("Please enter how many courses you would like to add (max 15):");
 
-    if (validate(name) && validateNum(count) && parseInt(count) < 16)
+    if (validate(name, 101) && validateNum(count, 16))
     {
         clear();
 
@@ -322,25 +314,17 @@ function updateSchedule()
             .then(data => { outTitle.appendChild(document.createTextNode(data));})
             .catch(error => console.error("Error: " + error));
     }
-    else if (validate(name) && validateNum(count))
+    else if (validate(name, 101))
     {
-        alert("Invalid input, maximum number of courses is 15!");
+        alert("Inavlid input for course count!");
     }
-    else if (validate(name))
-    {
-        alert("Inavlid input, must enter a number between 1 and 15 for course count!");
-    }
-    else if (validateNum(count) && parseInt(count) < 16)
+    else if (validateNum(count, 16))
     {
         alert("Invalid input for schedule name!");
     }
-    else if (validateNum(count))
-    {
-        alert("Invalid input for schedule name, and maximum number of courses is 15!");
-    }
     else
     {
-        alert("Invalid input for schedule name, and must enter a number between 1 and 15 for course count!")
+        alert("Invalid input for schedule name and course count!")
     }
 }
 
@@ -349,7 +333,7 @@ function displaySchedule()
 {
     let schedule = prompt("Please enter a schedule name: ");
 
-    if (validate(schedule))
+    if (validate(schedule, 101))
     {
         clear();
 
@@ -390,7 +374,7 @@ function deleteSchedule()
 {
     let schedule = prompt("Please enter a schedule name: ");
 
-    if (validate(schedule))
+    if (validate(schedule, 101))
     {
         clear();
 
@@ -453,9 +437,9 @@ function deleteAllSchedules()
 }
 
 // function to sanitize alphanumeric input on the front end
-function validate(input)
+function validate(input, l)
 {
-    if (String(input).includes("{") || String(input).includes("}") || String(input).includes("[") || String(input).includes("]") || String(input).includes("<") || String(input).includes(">") || String(input).includes(";") || String(input).includes(".") || String(input).includes(",") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_"))
+    if ((String(input).includes("{") || String(input).includes("}") || String(input).includes("[") || String(input).includes("]") || String(input).includes("<") || String(input).includes(">") || String(input).includes(";") || String(input).includes(".") || String(input).includes(",") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_")) || String(input).length >= l)
     {
         return false;
     }
@@ -466,9 +450,9 @@ function validate(input)
 }
 
 // function to sanitize numerical input on the front end
-function validateNum(input)
+function validateNum(input, l)
 {
-    if ((/^[0-9]+$/.test(input)) && (input > 0))
+    if ((/^[0-9]+$/.test(input)) && (input > 0) && (input < l))
     {
         return true;
     }
