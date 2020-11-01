@@ -207,16 +207,9 @@ srouter.route("/:schedule") // all routes that access a particular schedule
                 res.status(400).send(`Schedule already exists with name: ${newSchedule.name}`);
             }
             else if (exIndex < 0) // create a new schedule
-            {
-                if (newSchedule.classes.length > 0) // if the schedule is not empty
-                {       
-                    sdata.push(newSchedule); // add new schedule to the array
-                    res.send(`Created schedule with name: ${newSchedule.name}`);
-                }
-                else // if schedule is empty
-                {
-                    res.status(400).send(`Empty schedule not permitted, cannot create schedule with name: ${newSchedule.name}`)
-                }    
+            {       
+                sdata.push(newSchedule); // add new schedule to the array
+                res.send(`Created schedule with name: ${newSchedule.name}`);   
             }
 
             setScheduleData(sdata, sfile); // send updated schedules array to JSON file
@@ -254,7 +247,7 @@ srouter.route("/:schedule") // all routes that access a particular schedule
                 }
                 else // if schedule is empty
                 {
-                    res.status(400).send(`Empty schedule not permitted, cannot update schedule with name: ${newSchedule.name}`)
+                    res.status(400).send(`Unable to add zero courses, cannot update schedule with name: ${newSchedule.name}`)
                 } 
             }
             else if (exIndex < 0) // if the schedule does not exist
@@ -384,9 +377,7 @@ function getScheduleData(file)
 // function to write to JSON file after each update to sdata array
 function setScheduleData(array, file)
 {
-    let data = JSON.stringify(array); // turn given array into JSON 
-    
-    fs.writeFile(file, data, error => {
+    fs.writeFile(file, JSON.stringify(array), error => {
 
         if (error) // if an error is thrown when writing
         {
@@ -401,7 +392,7 @@ function setScheduleData(array, file)
 function sanitizeInput(input, l) 
 { 
     // limit is 1000 characters, as test cases with 15 courses (max amount) were always in the range of 700-800 characters
-    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).length >= l)
+    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).length >= l || String(input).length < 1)
     {
         return false;
     }

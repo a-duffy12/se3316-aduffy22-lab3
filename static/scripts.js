@@ -49,7 +49,7 @@ function displayCourses()
 // function to print all catalogs for a given subject q2
 function displayCourseCodes()
 {
-    let subject = prompt("Please enter a subject code: "); // prompt user for a subject 
+    let subject = prompt("Please enter a subject code: ").toUpperCase(); // prompt user for a subject 
 
     if (validate(subject, 9))
     {
@@ -90,8 +90,8 @@ function displayCourseCodes()
 // function to get a timetable entry(ies) when given a subject/catalog/(component) q3
 function displayTimeTable()
 {
-    let subject = prompt("Please enter a subject code: ");
-    let catalog = prompt("Please enter a catalog number: ");
+    let subject = prompt("Please enter a subject code: ").toUpperCase();
+    let catalog = prompt("Please enter a catalog number: ").toUpperCase();
     let longV = prompt("If you would like to search for a specific component, type 'yes'\nIf you would like to view all components, type anything else");
 
 
@@ -154,7 +154,7 @@ function displayTimeTable()
     }
     else if (longV.toLowerCase() == "yes")
     {
-        let component = prompt("Please enter a course component: ");
+        let component = prompt("Please enter a course component: ").toUpperCase();
 
         if (validate(subject, 9) && validate(catalog, 6) && validate(component, 4))
         {
@@ -226,8 +226,8 @@ function displayTimeTable()
 // function to create a new schedule with subject+catalog pairs and a given name q4
 function createSchedule()
 {
-    let name = prompt("Please enter a name for your schedule (max 100 chars): ");
-    let count = prompt("Please enter how many courses you would like to add (max 15):");
+    let name = prompt("Please enter a name for your schedule (max 100 chars, no spaces): ");
+    let count = prompt("Please enter how many courses you would like to add (min 0, max 15):");
 
     if (validate(name, 101) && validateNum(count, 16))
     {
@@ -239,8 +239,8 @@ function createSchedule()
         for (let i=0; i<count; i++)
         {
             let pair = {}; // empty object to hold class pair
-            let ps = prompt(`Please enter subject ${i+1}: `);
-            let pc = prompt(`Please enter course code ${i+1}: `);
+            let ps = prompt(`Please enter subject ${i+1}: `).toUpperCase();
+            let pc = prompt(`Please enter course code ${i+1}: `).toUpperCase();
             pair.subject_code = ps;
             pair.course_code = pc;
             (sch.classes).push(pair); // add new course pair into schedule
@@ -279,8 +279,8 @@ function createSchedule()
 // overwrite an existing schedule of the same name q5
 function updateSchedule()
 {
-    let name = prompt("Please enter the name of the schdule use wish to update (max 100 chars): ");
-    let count = prompt("Please enter how many courses you would like to add (max 15):");
+    let name = prompt("Please enter the name of the schdule use wish to update (max 100 chars, no spaces): ");
+    let count = prompt("Please enter how many courses you would like to add (min 0, max 15):");
 
     if (validate(name, 101) && validateNum(count, 16))
     {
@@ -292,8 +292,8 @@ function updateSchedule()
         for (let i=0; i<count; i++)
         {
             let pair = {}; // empty object to hold class pair
-            let ps = prompt(`Please enter subject ${i+1}: `);
-            let pc = prompt(`Please enter course code ${i+1}: `);
+            let ps = prompt(`Please enter subject ${i+1}: `).toUpperCase();
+            let pc = prompt(`Please enter course code ${i+1}: `).toUpperCase();
             pair.subject_code = ps;
             pair.course_code = pc;
             (sch.classes).push(pair); // add new course pair into schedule
@@ -439,7 +439,7 @@ function deleteAllSchedules()
 // function to sanitize alphanumeric input on the front end
 function validate(input, l)
 {
-    if ((String(input).includes("{") || String(input).includes("}") || String(input).includes("[") || String(input).includes("]") || String(input).includes("<") || String(input).includes(">") || String(input).includes(";") || String(input).includes(".") || String(input).includes(",") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_")) || String(input).length >= l)
+    if (String(input).includes("<") || String(input).includes(">") || String(input).includes(".") || String(input).includes("/") || String(input).includes("(") || String(input).includes(")") || String(input).includes("*") || String(input).includes("'") || String(input).includes("_") || String(input).includes(" ") || String(input).length >= l || String(input).length < 1)
     {
         return false;
     }
@@ -452,7 +452,7 @@ function validate(input, l)
 // function to sanitize numerical input on the front end
 function validateNum(input, l)
 {
-    if ((/^[0-9]+$/.test(input)) && (input > 0) && (input < l))
+    if ((/^[0-9]+$/.test(input)) && (input >= 0) && (input < l))
     {
         return true;
     }
