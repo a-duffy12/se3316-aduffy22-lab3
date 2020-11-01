@@ -4,7 +4,3 @@
 .git/
 .vs/
 node_modules/
-#
-# file types
-*.json
-
