@@ -226,7 +226,7 @@ function displayTimeTable()
 // function to create a new schedule with subject+catalog pairs and a given name q4
 function createSchedule()
 {
-    let name = prompt("Please enter a name for your schedule (max 100 chars, no spaces): ");
+    let name = prompt("Please enter a name for your schedule (max 100 chars): ");
     let count = prompt("Please enter how many courses you would like to add (min 0, max 15):");
 
     if (validate(name, 101) && validateNum(count, 16))
@@ -279,7 +279,7 @@ function createSchedule()
 // overwrite an existing schedule of the same name q5
 function updateSchedule()
 {
-    let name = prompt("Please enter the name of the schdule use wish to update (max 100 chars, no spaces): ");
+    let name = prompt("Please enter the name of the schedule use wish to update (max 100 chars): ");
     let count = prompt("Please enter how many courses you would like to add (min 0, max 15):");
 
     if (validate(name, 101) && validateNum(count, 16))
