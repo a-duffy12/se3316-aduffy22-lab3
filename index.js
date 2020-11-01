@@ -371,7 +371,6 @@ app.listen(port, () => {console.log(`Listeneing on port ${port}`)}); // choose w
 // function to read from JSON file before each usage of the sdata array
 function getScheduleData(file)
 {
-    console.log(JSON.stringify(file)); // bug test
     return JSON.parse(JSON.stringify(file)); // parse json object holding the schedules;
 };
 
