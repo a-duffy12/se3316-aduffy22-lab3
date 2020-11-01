@@ -294,7 +294,7 @@ srouter.route("/:schedule") // all routes that access a particular schedule
     })
     .delete( (req, res) => { // delete a schedule with given name Q7
    
-        if (sanitizeInput(req.params.schedule))
+        if (sanitizeInput(req.params.schedule, 100))
         {
             sdata = getScheduleData(j2data); // get up to date schedule data
     
